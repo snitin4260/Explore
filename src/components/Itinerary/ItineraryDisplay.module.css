@@ -1,0 +1,50 @@
+.dateplace {
+  text-align: center;
+  font-size: 1.6rem;
+  font-family: "Roboto", sans-serif;
+  background: gray;
+  margin-top: 3rem;
+  padding: 1rem;
+  display: inline-block;
+}
+
+.activity_container {
+  list-style: none;
+}
+
+.select_container{
+  max-width:50rem;
+  margin: 0 auto;
+}
+
+.date {
+  margin-right: 0.2rem;
+}
+
+.place {
+  margin-left: 0.2rem;
+}
+
+.activity_item {
+  border: 2px solid black;
+  padding: 1rem;
+  font-size: 2rem;
+  background: white;
+  margin-bottom: 2rem;
+  border-radius: 3px;
+  font-family: "Roboto", sans-serif;
+  color: var(--font-color);
+}
+
+.block {
+  margin-bottom: 3rem;
+  height: 4rem;
+}
+
+.select_loader {
+  max-width: 500px;
+  height: 30px;
+  margin: 0 auto;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}

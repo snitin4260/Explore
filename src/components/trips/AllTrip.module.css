@@ -1,0 +1,21 @@
+.block {
+    margin-bottom: 5rem;
+    height: 2rem;
+}
+
+.link {
+    color: black;
+    text-decoration: none;
+}
+
+.inner_container {
+    max-width: 96rem;
+    margin: 0 auto;
+}
+
+.content {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}

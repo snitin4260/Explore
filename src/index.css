@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+#root,
+html,
+body {
+  min-height: 100vh;
+}
+
+html {
+  font-size: 62.5%;
+  --main-bg-color: rgb(28, 32, 34);
+  --font-color: #34495e;
+}
+
+.loadingDiv {
+  background-color: rgb(205, 205, 205);
+  animation: react-placeholder-pulse 1.5s infinite;
+}
+
+@keyframes react-placeholder-pulse {
+  0% {
+    opacity: 0.65;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.65;
+  }
+}

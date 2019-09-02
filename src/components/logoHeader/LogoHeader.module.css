@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css?family=Lemonada&display=swap");
+.design {
+  position: relative;
+  background: url("https://d1a3f4spazzrp4.cloudfront.net/arch-frontend/1.1.1/d1a3f4spazzrp4.cloudfront.net/1454024011-global_aqua_01_scale_125_144dpi_01-37a1ca0b8b.png")
+    center center repeat;
+  height: 4rem;
+  background-size: 60px 60px !important;
+}
+
+.design-logo {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 50%;
+  top: 20px;
+  height: 94px;
+  width: 94px;
+  background-color: black;
+  color: white;
+  margin-left: -47px;
+  font-family: "Lemonada", cursive;
+}
+
+.design-logo-text {
+    font-size: 1.8rem;
+}

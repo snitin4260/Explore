@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300|Open+Sans|Roboto&display=swap");
+.img-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.image-para {
+  font-family: "Montserrat", sans-serif;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 100;
+}
+
+.image {
+  max-width: 100%;
+  /* to solve mysterious margin below images */
+  vertical-align: middle;
+}
+
+.image-header {
+  font-family: "Open Sans", sans-serif;
+  color: white;
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+}
+
+.blackBox {
+  background-color: black;
+}
+
+.blackBox.top {
+  padding: 1rem;
+}
+
+@media screen and (min-width: 600px) {
+  .blackBox.top {
+    padding: 2rem;
+  }
+  .image-header {
+    font-size: 3.2rem;
+  }
+
+  .image-para {
+    font-size: 2rem;
+  }
+}
+
+.blackBox.bottom {
+  height: 1rem;
+}

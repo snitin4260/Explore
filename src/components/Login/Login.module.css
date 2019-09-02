@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+
+.form-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-submit-button {
+  text-transform: uppercase;
+  color: white;
+  background-color: var(--main-bg-color);
+  border: 0;
+  width: 100%;
+  font-weight: 600;
+  padding: 1.2rem 1rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-family: "Roboto", sans-serif;
+}
+
+.form-box {
+  max-width: 600px;
+  margin: 10rem auto;
+  font-family: "Roboto", sans-serif;
+}
+
+.form-inner-box {
+  width: 80%;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+

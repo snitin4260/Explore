@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css?family=Lemonada|Roboto&display=swap");
+
+.header {
+  background-color: black;
+  color: white;
+  padding: 0.6rem;
+}
+
+.header__logo-item {
+  text-decoration: none;
+  color: white;
+  font-family: "Lemonada", cursive;
+  font-size: 2.5rem;
+  margin-left: 0.8rem;
+}
+
+.header__item {
+  font-size: 1.8rem;
+  text-decoration: none;
+  color:white;
+  font-family: "Roboto", sans-serif;
+  margin-right: 3rem;
+}
+.header__item:hover {
+    color:#276EF1;
+}
+
+
+.header__container {
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__button {
+  background-color: #276ef1;
+  border: 0;
+  padding: 1rem;
+  font-size: 1.8rem;
+  font-family: "Roboto", sans-serif;
+  color: white;
+  margin-right: 0.8rem;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 600px) {
+  .header__item {
+    font-size: 2rem;
+  }
+}
