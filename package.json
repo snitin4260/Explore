@@ -34,7 +34,6 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^4.7.2",
-    "nodemon": "^1.19.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
@@ -50,8 +49,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "standard": "npx standard --fix"
+    "standard": "npx standard --fix",
+    "server": "nodemon --exec  node-env-run server.js ",
+    "dev": "run-p server start"
   },
+  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -69,6 +71,9 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.17.0",
+    "node-env-run": "^3.0.2",
+    "nodemon": "^1.19.1",
+    "npm-run-all": "^4.1.5",
     "redux-logger": "^3.0.6",
     "standard": "^13.1.0"
   }

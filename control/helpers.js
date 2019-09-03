@@ -7,6 +7,7 @@ const userSession = require('../server')
 var difference
 
 const postNewTrip = async (req, res) => {
+  console.log('exc')
   try {
     var start = moment(req.body.startDate, 'DD-MM-YYYY')
     var end = moment(req.body.endDate, 'DD-MM-YYYY')

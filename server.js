@@ -16,24 +16,24 @@ const path = require('path')
 const mongoose = require('mongoose')
 const staticify = require('staticify')(path.join(__dirname, 'views'))
 app.use(bodyParser.json())
-app.use(function (req, res, next) {
-  // console.log(req)
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Methods', '*')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-  next()
-})
+// app.use(function (req, res, next) {
+//   // console.log(req)
+//   res.header('Access-Control-Allow-Origin', '*')
+//   res.header('Access-Control-Allow-Methods', '*')
+//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+//   next()
+// })
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(staticify.middleware)
-mongoose.connect(process.env.DB_HOST)
+// mongoose.connect(process.env.DB_HOST)
 
 app.use(session({
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection,
-    // mongooseConnection: mongoose.connection,
-    autoRemove: 'interval',
-    autoRemoveInterval: 10
-  }),
+  // store: new MongoStore({
+  //   mongooseConnection: mongoose.connection,
+  //   // mongooseConnection: mongoose.connection,
+  //   autoRemove: 'interval',
+  //   autoRemoveInterval: 10
+  // }),
   key: 'user_sid',
   secret: 'Akshay13578111851171',
   resave: true,
@@ -89,16 +89,13 @@ const isLoggedIn = async (req, res, next) => {
   }
   res.status(401).send('loggin first')
 }
-
-app.use('/trip', isLoggedIn, tripRoutes)
-app.use('/', tripRoutes)
-
-app.use('/*', express.static(path.join(__dirname, 'views'), { maxAge: '30 days' }))
-
-// app.use('/api/trip', tripRoutes)
-// app.get('/*', (req, res) => {
-//   res.sendFile(__dirname, 'views')
+// app.post('/trip/new', (req, res) => {
+//   console.log('++++++++')
+//   console.log(req)
 // })
+
+app.use('/api/trip', isLoggedIn, tripRoutes)
+app.use('/*', express.static(path.join(__dirname, 'views'), { maxAge: '30 days' }))
 
 server.listen(PORT, () => {
   console.log(`Magic Happening on ${PORT}`)
