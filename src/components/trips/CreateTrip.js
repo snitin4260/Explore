@@ -267,6 +267,7 @@ class CreateTrip extends React.Component {
                   name="tripStartDate"
                   id="from-date"
                   selected={tripStartDate}
+                  dateFormat="dd/MM/yyyy"
                   onChange={this.handleStartDateChange}
                 />
               </InputLabelContainer>
