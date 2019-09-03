@@ -7,18 +7,27 @@ import {
 import { API_URL } from '../api'
 
 export default tripId => async dispatch => {
-  dispatch({ type: GET_ITINERARY_DATA_START,
+  dispatch({
+    type: GET_ITINERARY_DATA_START,
     payload: {
       tripId
-    } })
+    }
+  })
   try {
     const response = await fetch(`${API_URL}/itinerary/${tripId}`)
-    const itineraryData = await response.json()
+    const data = await response.json()
+    const { itinerary } = data
+    const { day, date, location } = itinerary[0]
+    const label = `Day ${day}| ${date} ${location}`
     dispatch({
       type: GET_ITINERARY_DATA_SUCCESS,
       payload: {
         tripId,
-        data: itineraryData
+        data: itinerary,
+        selectedOption: {
+          label,
+          value: 1
+        }
       }
     })
   } catch (e) {

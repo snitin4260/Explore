@@ -12,9 +12,9 @@ const Form = styled.form`
 `;
 
 const Container = styled.div`
-  position: fixed
+  position: fixed;
   top: 50%;
-  left:50%;
+  left: 50%;
   transform: translate(-50%,-50%);
   max-width: 440px;
   width: 100%;
@@ -68,7 +68,7 @@ const SubmitButton = styled.button`
   font-size: 1.5rem;
   border: 0.2rem;
   color: white;
-  cursor: ${props => props.isSubmitting? 'not-allowed':'pointer'};
+  cursor: ${props => (props.isSubmitting ? "not-allowed" : "pointer")};
 `;
 
 const ErrorDiv = styled.div`
@@ -95,7 +95,7 @@ const RounDiv = styled.button`
   border-radius: 50%;
   right: 30px;
   top: 30px;
-  border:0;
+  border: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -155,9 +155,8 @@ class CreateTrip extends React.Component {
   handleCloseClick = _ => {
     this.setState({
       closeButtonRedirect: true
-    })
- 
-  }
+    });
+  };
 
   handleSubmit = async e => {
     e.preventDefault();
@@ -180,9 +179,7 @@ class CreateTrip extends React.Component {
         if (response.status === 201) {
           this.setState({
             redirect: true
-          })
-
-
+          });
         } else {
           const reposnseObject = await response.json();
           this.setState({
@@ -212,30 +209,32 @@ class CreateTrip extends React.Component {
       redirect,
       closeButtonRedirect
     } = this.state;
-    const buttonProps= {
+    const buttonProps = {
       disabled: isSubmitting
-    }
+    };
 
-    if(redirect) {
+    if (redirect) {
       return (
         <Redirect
           to={{
             pathname: "/trip/all",
-            state: {message:"Trip Succesfully created"}
+            state: { message: "Trip Succesfully created" }
           }}
         />
       );
     }
 
-    if(closeButtonRedirect) {
-      return (
-        <Redirect to="/trip"/>
-      )
+    if (closeButtonRedirect) {
+      return <Redirect to="/trip" />;
     }
 
     return (
       <>
-        <RounDiv onClick={this.handleCloseClick} {...buttonProps} isSubmitting={isSubmitting}>
+        <RounDiv
+          onClick={this.handleCloseClick}
+          {...buttonProps}
+          isSubmitting={isSubmitting}
+        >
           <CloseSvg
             aria-hidden="true"
             role="img"
@@ -268,6 +267,7 @@ class CreateTrip extends React.Component {
                   name="tripStartDate"
                   id="from-date"
                   selected={tripStartDate}
+                  dateFormat="dd/MM/yyyy"
                   onChange={this.handleStartDateChange}
                 />
               </InputLabelContainer>
@@ -277,6 +277,7 @@ class CreateTrip extends React.Component {
                   name="tripEndDate"
                   className="date"
                   id="to-date"
+                  dateFormat="dd/MM/yyyy"
                   selected={tripEndDate}
                   onChange={this.handleEndDateChange}
                 />

@@ -8,6 +8,7 @@ import Trips from './components/trips/Trips'
 import CreateTrip from './components/trips/CreateTrip'
 import AllTrip from './components/trips/AllTrip'
 import ItineraryDisplay from './components/Itinerary/ItineraryDisplay'
+import ItineraryEdit from './components/Itinerary/ItineraryEditContainer'
 import Todo from './components/Todo/TodoApp'
 
 function Root ({ store }) {
@@ -15,18 +16,20 @@ function Root ({ store }) {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route path='/' exact component={MainPage} />
-          <Route path='/register' component={Register} />
-          <Route path='/login' component={Login} />
-          <Route path='/trip' exact component={Trips} />
-          <Route path='/trip/create' component={CreateTrip} />
-          <Route path='/trip/all' component={AllTrip} />
-          <Route path='/trip/itinerary/:id' component={ItineraryDisplay} />
-          <Route path='/trip/todo/:id' component={Todo} />
+          <Route path="/" exact component={MainPage} />
+          <Route path="/register" component={Register} />
+          <Route path="/login" component={Login} />
+          <Route path="/trip" exact component={Trips} />
+          <Route path="/trip/create" component={CreateTrip} />
+          <Route path="/trip/all" component={AllTrip} />
+          <Route path="/trip/itinerary/edit" exact component={ItineraryEdit} />
+          <Route path="/trip/itinerary/:id" component={ItineraryDisplay} />
+
+          <Route path="/trip/todo/:id" component={Todo} />
         </Switch>
       </Router>
     </Provider>
-  )
+  );
 }
 
 export default Root
