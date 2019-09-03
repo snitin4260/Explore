@@ -93,8 +93,8 @@ const isLoggedIn = async (req, res, next) => {
 //   console.log('++++++++')
 //   console.log(req)
 // })
-
-app.use('/api/trip', isLoggedIn, tripRoutes)
+app.use('/', tripRoutes)
+app.use('/trip', isLoggedIn, tripRoutes)
 app.use('/*', express.static(path.join(__dirname, 'views'), { maxAge: '30 days' }))
 
 server.listen(PORT, () => {
