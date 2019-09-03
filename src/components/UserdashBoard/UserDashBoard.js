@@ -17,13 +17,15 @@ class UserDashBoard extends React.Component {
     const { bg } = this.props
     return (
       <Container>
-        <SideBar />
         <InnerContainer>
           <Header />
-          <BackgroundContainer bg={bg}>{this.props.children}</BackgroundContainer>
+          <SideBar />
+          <BackgroundContainer bg={bg}>
+            {this.props.children}
+          </BackgroundContainer>
         </InnerContainer>
       </Container>
-    )
+    );
   }
 }
 

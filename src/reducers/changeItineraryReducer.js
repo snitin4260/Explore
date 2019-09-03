@@ -16,8 +16,8 @@ export default (state = {}, action) => {
           isLoading: true,
           data: [],
           selectedOption: {
-            label: 'Day 1',
-            value: 1
+            label: null,
+            value: null
           }
         }
       })
@@ -32,7 +32,8 @@ export default (state = {}, action) => {
       return produce(state, draft => {
         const trip = draft[action.payload.tripId]
         trip.isLoading = false
-        trip.data = action.payload.data.itinerary
+        trip.data = action.payload.data
+        trip.selectedOption = action.payload.selectedOption
       })
     }
 

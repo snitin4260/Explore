@@ -15,6 +15,12 @@ const Container = styled.div`
   justify-content: flex-start;
   align-items: center;
   padding-top: 9rem;
+  /* @media (max-width: 500px) {
+    position: sticky;
+    flex-direction: row;
+    overflow: auto;
+    padding-top:0;
+  } */
 `
 
 const Logo = styled.span`

@@ -83,6 +83,7 @@ const TodoTitle = styled.h1`
   text-align: center;
   color: #222;
   margin-bottom: 1.4rem;
+  text-transform: uppercase;
 `;
 
 const TodoInput = styled.input`
@@ -254,7 +255,7 @@ class TodoApp extends React.Component {
           <>
             <UserDashBoard bg="#0079bf">
               <Main>
-                <TodoTitle>Todos</TodoTitle>
+                <TodoTitle>Todo</TodoTitle>
                 {isLoading ? (
                   <div>Loading</div>
                 ) : (
