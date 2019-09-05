@@ -1,14 +1,12 @@
 import React from "react";
-import ItineraryEditItem from "./ItineraryEditItem";
-import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
-import getItineraryData from "../../actions/getItineraryData";
-import styles from "./ItineraryEditContainer.module.css";
-const mapDispatchToprops = dispatch => {
-  return {
-    getItineraryData: () => dispatch(getItineraryData())
-  };
-};
+import {connect} from 'react-redux'
+import styled from "styled-components";
+
+import ItineraryEditItem from "./ItineraryEditItem";
+import Header from '../header/Header'
+import BackgroundContainer from "../BackgroundContainer/BackgroundContainer"
+
 
 const mapStateToProps = state => {
   const { itinerary } = state;
@@ -17,88 +15,60 @@ const mapStateToProps = state => {
   };
 };
 
+const Container = styled.div`
+  font-family: "Roboto", sans-serif;
+  font-size: 2rem;
+  padding: 1.5rem;
+  max-width: 96rem;
+  margin: 0 auto;
+`;
+
+const Title = styled.h1`
+  text-align: center;
+  margin-bottom: 2rem;
+`;
 class ItineraryEditContainer extends React.Component {
   state = {
     redirectToTrips: false
   };
 
+  componentDidMount() {
+    const { location, itinerary } = this.props;
+    if (!location.state|| (!itinerary[location.state.tripId])) {
+          this.setState({
+            redirectToTrips: true
+          });
+        }
+
+  }
+
   render() {
+    const {location,itinerary} = this.props
     if (this.state.redirectToTrips) {
       return <Redirect to="/trip" />;
     }
-
-    if (!this.props.location.state) {
-      this.setState({
-        redirectToTrips: true
-      });
-      return null;
+    // react router is persisting state from another page even after refreshing page
+    if (!location.state|| (!itinerary[location.state.tripId])) {
+      return null
     }
-    const { tripId } = this.props.location.state;
-    console.log(this.props.itinerary[tripId]);
-    const { error, isLoading, data } = this.props.itinerary[tripId];
+    const { tripId } = location.state;
+    const { data } = itinerary[tripId];
     return (
       <>
-        {error ? (
-          <div className={styles.error}>
-            <h1 className={styles["error__heading"]}>
-              Looks like Something went wrong on our end. Try reloading the page
-            </h1>
-            <img
-              className={styles["error__image"]}
-              alt="server down"
-              src="https://res.cloudinary.com/dyzlj4fxl/image/upload/v1565110994/undraw_server_down_s4lk_bbndsf.svg"
-            />
-          </div>
-        ) : (
-          <div className={styles["itineraryContainer"]}>
-            <div
-              style={{
-                maxWidth: "80rem",
-                margin: "0 auto"
-              }}
-            >
-              <h1 className={styles["itineraryContainer__heading"]}>
-                Edit Itinerary
-              </h1>
-              {isLoading ? (
-                <>
-                  <div
-                    className="loadingDiv"
-                    style={{
-                      height: "200px"
-                    }}
-                  />
-                  <div
-                    className="loadingDiv"
-                    style={{
-                      height: "200px"
-                    }}
-                  />
-                  <div
-                    className="loadingDiv"
-                    style={{
-                      height: "200px"
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  {data.map((data, index) => {
-                    return (
-                      <ItineraryEditItem key={data.day} itinerary={data} />
-                    );
-                  })}
-                </>
-              )}
-            </div>
-          </div>
-        )}
+        <Header />
+        <BackgroundContainer>
+          <Container>
+            <Title>Edit Itinerary</Title>
+            <>
+              {data.map((data, index) => {
+                return <ItineraryEditItem key={data.day} itinerary={data} />;
+              })}
+            </>
+          </Container>
+        </BackgroundContainer>
       </>
     );
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToprops
-)(ItineraryEditContainer);
+export default connect(mapStateToProps)(ItineraryEditContainer);
