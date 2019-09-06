@@ -160,7 +160,7 @@ class CreateTrip extends React.Component {
 
   handleSubmit = async e => {
     e.preventDefault();
-    const { tripEndDate, tripStartDate } = this.state;
+    const { tripEndDate, tripStartDate,tripName } = this.state;
     console.log(tripStartDate);
     console.log(tripEndDate);
     if (tripEndDate < tripStartDate) {
@@ -174,7 +174,12 @@ class CreateTrip extends React.Component {
       });
       try {
         const response = await fetch(`${API_URL}/trip/new`, {
-          method: "POST"
+          method: "POST",
+          body: JSON.stringify({
+            tripName,
+            startDate: tripStartDate,
+            endDate: tripEndDate
+          })
         });
         if (response.status === 201) {
           this.setState({

@@ -1,5 +1,19 @@
 import React from "react";
 import styled from "styled-components";
+import uuid from "uuid";
+
+import { API_URL } from "../../api";
+import Alert from "../Alert/Alert";
+import { Loader } from "../Todo/Modal";
+
+const ItineraryLoader = styled(Loader)`
+  position: absolute;
+  top: 0;
+  left: 210px;
+  display: ${props => {
+    return props.isSendingData ? "block" : "none";
+  }};
+`;
 
 const TitleContainer = styled.div`
   display: flex;
@@ -100,6 +114,7 @@ const ActivityInputItemContainer = styled.div`
   display: flex;
   margin-bottom: 1rem;
 `;
+
 const ActivityInputItem = styled(LocationInput)`
   margin-right: 1rem;
   display: inline-block;
@@ -119,12 +134,12 @@ const AccordionActivityContainer = styled.div``;
 
 const AccordionActivityInnerContainer = styled.div``;
 
-
 const SaveButtonContainer = styled.div`
-  margin-top: 3rem;
+  margin-top: 2rem;
+  position: relative;
 `;
 
-const SaveButton = styled.button`
+export const SaveButton = styled.button`
   background: #00ad9f;
   border: 0;
   display: inline-block;
@@ -134,7 +149,9 @@ const SaveButton = styled.button`
     0 2px 4px 0 rgba(14, 30, 37, 0.12);
   padding: 0.7rem 1.4rem;
   display: inline-block;
-  cursor: pointer;
+  cursor: ${props => {
+    return props.isSendingData ? "not-allowed" : "pointer";
+  }};
   font-size: 1.6rem;
   color: white;
 `;
@@ -145,41 +162,151 @@ const AddSvgContainer = styled.span`
   align-items: center;
   border-radius: 50%;
   background: var(--main-bg-color);
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
 `;
 
 const AddSvg = styled.svg`
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   color: white;
 `;
 
 const AddActivityText = styled.span`
-color: black;
-margin-left: 1rem;
-`
+  color: black;
+  margin-left: 1rem;
+`;
 
+const AddActivityContainer = styled.div`
+  margin-bottom: 1rem;
+`;
 
 class ItineraryEdititem extends React.Component {
   state = {
-    day: this.props.itinerary.day,
-    date: this.props.itinerary.date,
     isExpand: false,
     location: this.props.itinerary.location,
-    activity: this.props.itinerary.activity
+    activity: this.props.itinerary.activity,
+    createActivityError: null,
+    validationError: "",
+    serverError: "",
+    successMessage: "",
+    isSendingData: false
   };
 
-
-  handleLocationchange= e => {
-    const {value} = e.target
+  handleLocationchange = e => {
+    const { value } = e.target;
+    this.removeErrorMessage();
     this.setState({
       location: value
+    });
+  };
 
-    })
+  checkAllInputsAreValid() {
+    const { activity } = this.state;
+    let emptyInputArray = [];
+    if (this.state.location.trim() === "") emptyInputArray.push("Location");
+    for (let i = 0; i < activity.length; i++) {
+      let activityObj = activity[i];
+      if (activityObj.task.trim() === "") {
+        emptyInputArray.push("Activity");
+        break;
+      }
+    }
+    if (emptyInputArray.length === 0) {
+      return {
+        state: true
+      };
+    }
+    return {
+      state: false,
+      message: `${emptyInputArray.join(",")} should not be empty`
+    };
   }
 
+  removeErrorMessage() {
+    if (this.state.validationError) {
+      this.setState({
+        validationError: ""
+      });
+      return;
+    }
+    if (this.state.serverError) {
+      this.setState({
+        serverError: ""
+      });
+    }
+
+    if (this.state.successMessage) {
+      this.setState({
+        successMessage: ""
+      });
+    }
+  }
+
+  saveChanges = async _ => {
+    const response = this.checkAllInputsAreValid();
+    if (!response.state) {
+      this.setState({
+        validationError: response.message
+      });
+      return;
+    }
+
+    const { tripId } = this.props;
+    try {
+      // have to add userId and text in body
+      this.setState({
+        isSendingData: true
+      });
+      const response = await fetch(`${API_URL}/itinerary/edit/${tripId}`, {
+        method: "POST",
+        body: JSON.stringify({
+          _id: this.props.itinerary._id,
+          activity: this.state.activity,
+          tripId
+        })
+      });
+      const activityObj = await response.json();
+      this.setState({
+        isSendingData: false
+      });
+      if (response.status === 200) {
+        this.setState({
+          successMessage: "Changes saved"
+        });
+        this.props.changeItinerary({
+          tripId,
+          _id: this.props.itinerary._id,
+          activity: this.state.activity
+        });
+      } else {
+        this.setState({
+          serverError: activityObj.msg
+        });
+      }
+    } catch (e) {
+      this.setState({
+        serverError: "Server is down. Please try after some time"
+      });
+    }
+  };
+
+  insertNewTask = _ => {
+    const newId = uuid.v4();
+    const newActivity = Array.from(this.state.activity);
+    newActivity.push({
+      _id: newId,
+      task: ""
+    });
+    this.setState({
+      activity: newActivity
+    });
+  };
+
   handleTaskInputChange = (e, id) => {
+    // check any validations errors are there
+    this.removeErrorMessage();
     const { value } = e.target;
     const newActivity = this.state.activity.map(activityObj => {
       if (activityObj._id === id) {
@@ -196,21 +323,20 @@ class ItineraryEdititem extends React.Component {
     });
   };
 
-
   deleteItem = id => {
+    this.removeErrorMessage();
     const newActivity = this.state.activity.filter(activityObj => {
       if (activityObj._id !== id) {
-        return true
+        return true;
       }
 
-      return false
+      return false;
     });
 
     this.setState({
       activity: newActivity
-    })
-
-  }
+    });
+  };
 
   toggleClick = () => {
     this.setState(prevState => ({
@@ -224,7 +350,21 @@ class ItineraryEdititem extends React.Component {
   }
 
   render() {
-    const { day, isExpand, location, date, activity } = this.state;
+    const { day, date } = this.props.itinerary;
+    const {
+      isExpand,
+      location,
+      activity,
+      isSendingData,
+      validationError,
+      serverError,
+      successMessage
+    } = this.state;
+
+    const buttonProps = {
+      disabled: isSendingData
+    };
+
 
     return (
       <>
@@ -281,8 +421,8 @@ class ItineraryEdititem extends React.Component {
               })}
             </AccordionActivityInnerContainer>
           </AccordionActivityContainer>
-          <div>
-            <AddSvgContainer>
+          <AddActivityContainer>
+            <AddSvgContainer onClick={this.insertNewTask}>
               <AddSvg
                 aria-hidden="true"
                 role="img"
@@ -296,10 +436,19 @@ class ItineraryEdititem extends React.Component {
               </AddSvg>
             </AddSvgContainer>
             <AddActivityText>Add Activity</AddActivityText>
-
-          </div>
+          </AddActivityContainer>
+          <Alert type="error" message={validationError} />
+          <Alert type="error" message={serverError} />
+          <Alert type="success" message={successMessage} />
           <SaveButtonContainer>
-            <SaveButton>Save Changes</SaveButton>
+            <SaveButton
+              onClick={this.saveChanges}
+              isSendingData={isSendingData}
+              {...buttonProps}
+            >
+              Save Changes
+            </SaveButton>
+            <ItineraryLoader isSendingData={isSendingData} />
           </SaveButtonContainer>
         </AccordionContentContainer>
       </>

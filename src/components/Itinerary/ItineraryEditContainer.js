@@ -6,6 +6,8 @@ import styled from "styled-components";
 import ItineraryEditItem from "./ItineraryEditItem";
 import Header from '../header/Header'
 import BackgroundContainer from "../BackgroundContainer/BackgroundContainer"
+import {changeItinerary} from "../../actions/setItineraryObject"
+import {SaveButton} from "./ItineraryEditItem"
 
 
 const mapStateToProps = state => {
@@ -14,6 +16,16 @@ const mapStateToProps = state => {
     itinerary
   };
 };
+
+
+const mapDispatchToProps = dispatch => ({
+  changeItinerary: ({ tripId, _id, activity }) => {
+    dispatch(changeItinerary({ tripId, _id, activity }));
+  }
+});
+
+const DashBoardButton= styled(SaveButton)`
+`
 
 const Container = styled.div`
   font-family: "Roboto", sans-serif;
@@ -29,27 +41,38 @@ const Title = styled.h1`
 `;
 class ItineraryEditContainer extends React.Component {
   state = {
-    redirectToTrips: false
+    redirectToTrips: false,
+    redirectToDashBoard: false
   };
 
   componentDidMount() {
     const { location, itinerary } = this.props;
-    if (!location.state|| (!itinerary[location.state.tripId])) {
-          this.setState({
-            redirectToTrips: true
-          });
-        }
+    if (!location.state || !itinerary[location.state.tripId]) {
+      this.setState({
+        redirectToTrips: true
+      });
+    }
+  }
 
+  redirectToDashBoard = _ => {
+    this.setState({
+      redirectToDashBoard: true
+    })
   }
 
   render() {
-    const {location,itinerary} = this.props
+    const { location, itinerary, changeItinerary } = this.props;
     if (this.state.redirectToTrips) {
-      return <Redirect to="/trip" />;
+      return <Redirect to="/trip"/>;
     }
-    // react router is persisting state from another page even after refreshing page
-    if (!location.state|| (!itinerary[location.state.tripId])) {
-      return null
+
+    if(this.state.redirectToDashBoard) {
+      return <Redirect to={`/trip/itinerary/${location.state.tripId}`}/>
+    }
+
+ // react router is persisting state from another page even after refreshing page
+    if (!location.state || !itinerary[location.state.tripId]) {
+      return null;
     }
     const { tripId } = location.state;
     const { data } = itinerary[tripId];
@@ -59,9 +82,19 @@ class ItineraryEditContainer extends React.Component {
         <BackgroundContainer>
           <Container>
             <Title>Edit Itinerary</Title>
+            <DashBoardButton onClick={this.redirectToDashBoard}>
+              Go back to dashboard
+            </DashBoardButton>
             <>
               {data.map((data, index) => {
-                return <ItineraryEditItem key={data.day} itinerary={data} />;
+                return (
+                  <ItineraryEditItem
+                    changeItinerary={changeItinerary}
+                    tripId={tripId}
+                    key={data.day}
+                    itinerary={data}
+                  />
+                );
               })}
             </>
           </Container>
@@ -71,4 +104,4 @@ class ItineraryEditContainer extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(ItineraryEditContainer);
+export default connect(mapStateToProps,mapDispatchToProps)(ItineraryEditContainer);
