@@ -5,11 +5,11 @@ const moment = require('moment')
 const uuidv1 = require('uuid/v1')
 var difference
 const postNewTrip = async (req, res) => {
+  console.log(req.body)
   try {
     var start = moment(req.body.startDate, 'DD-MM-YYYY')
     var end = moment(req.body.endDate, 'DD-MM-YYYY')
     difference = (moment.duration(start.diff(end)).asDays())
-    console.log(req.body)
     const Trip = {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
@@ -97,6 +97,7 @@ const particularItinearayData = async (req, res) => {
   try {
     const _id = req.params.id
     const itineraryData = await trips.findById(_id)
+    console
     res.status(200).json({ itinerary: itineraryData })
   } catch (error) {
     res.status(404).json(error)
