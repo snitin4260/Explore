@@ -4,7 +4,8 @@ import {
   GET_ITINERARY_DATA_FAIL,
   CHANGE_ITINERARY_SELECT_OPTION,
   GET_ITINERARY_DATA_SUCCESS,
-  SET_ITINERARY_TRIP_OBJECT
+  SET_ITINERARY_TRIP_OBJECT,
+  EDIT_ITINERARY_DATA
 } from '../actions/actionConstants'
 
 export default (state = {}, action) => {
@@ -21,6 +22,18 @@ export default (state = {}, action) => {
           }
         }
       })
+
+    case EDIT_ITINERARY_DATA: {
+      return produce(state, draft => {
+        const trip = draft[action.payload.tripId]
+        for (let i = 0; i < trip.data.length; i++) {
+          const itineraryDayData = trip.data[i]
+          if (itineraryDayData._id === action.payload._id) {
+            itineraryDayData.activity = action.payload.activity
+          }
+        }
+      })
+    }
 
     case GET_ITINERARY_DATA_START: {
       return produce(state, draft => {
