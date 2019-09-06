@@ -97,7 +97,7 @@ const particularItinearayData = async (req, res) => {
   try {
     const _id = req.params.id
     const itineraryData = await trips.findById(_id)
-    res.status(200).json(itineraryData.itinearary)
+    res.status(200).json({ itinerary: itineraryData })
   } catch (error) {
     res.status(404).json(error)
   }
