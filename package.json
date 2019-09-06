@@ -53,7 +53,7 @@
     "server": "nodemon --exec  node-env-run server.js ",
     "dev": "run-p server start"
   },
-  "proxy": "http://localhost:3000",
+  "proxy": "http://localhost:3002",
   "eslintConfig": {
     "extends": "react-app"
   },

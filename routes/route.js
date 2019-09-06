@@ -6,7 +6,7 @@ const { register } = require('../control/auth')
 const router = express.Router()
 
 router.post('/register', register)
-router.get('/itinerary', particularItinearayData)
+router.get('/itinerary/:id', particularItinearayData)
 router.get('/all', allTrip)
 router.post('/sendMail', mail)
 router.post('/new', postNewTrip)

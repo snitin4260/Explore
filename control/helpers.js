@@ -3,16 +3,13 @@ const todos = require('../models/todoSchema')
 const order = require('../models/orderSchema')
 const moment = require('moment')
 const uuidv1 = require('uuid/v1')
-const userSession = require('../server')
 var difference
-
 const postNewTrip = async (req, res) => {
-  console.log('exc')
   try {
     var start = moment(req.body.startDate, 'DD-MM-YYYY')
     var end = moment(req.body.endDate, 'DD-MM-YYYY')
     difference = (moment.duration(start.diff(end)).asDays())
-
+    console.log(req.body)
     const Trip = {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
@@ -22,21 +19,16 @@ const postNewTrip = async (req, res) => {
     }
     const startDate = moment(Trip.startDate, 'DD-MM-YYYY')
     const newIti = createItinearary(Math.abs(difference), startDate)
-    Trip.itinearary = newIti
-    const adminName = await trips.findById(userSession)
-    Trip.admin = adminName.name
+    Trip.itinearary.push(newIti)
     const newTripData = await trips.create(Trip)
-    res.status(200).json(`data added successfully${newTripData}`) // i hav to semd id
+    res.status(201).json(`data added successfully${newTripData}`) // i hav to semd id
   } catch (error) {
     console.log(error)
-    res.status(400).json(error)
+    res.status(400).json(Object.create(error))
   }
 }
 const countTrip = async (req, res) => {
   try {
-    console.log(req)
-    // const user = await req.headers.cookie.user
-    // console.log(user)
     res.status(200).json({ tripCount: 2 })
   } catch (error) {
     console.log(error)
@@ -45,7 +37,8 @@ const countTrip = async (req, res) => {
 }
 const tripsById = async (req, res) => {
   try {
-    const tripData = await trips.findById(req.params.id)
+    const _id = req.params.id
+    const tripData = await trips.findById(_id)
     res.status(200).json(tripData)
   } catch (error) {
     res.status(404).json(error)
@@ -54,14 +47,14 @@ const tripsById = async (req, res) => {
 const allTrip = async (req, res) => {
   try {
     const allTripsData = await trips.find()
-    const allTrips = allTripsData.map(obj => {
+    const allTripData = allTripsData.map(obj => {
       const trips = {}
       trips['tripName'] = obj.tripName
-      trips['id'] = obj._id
+      trips['_id'] = obj._id
       trips['createdAt'] = obj.createdAt
       return trips
     })
-    res.status(200).json({ allTrips })
+    res.status(200).json({ allTripData })
   } catch (error) {
     res.status(404).json(error)
   }
@@ -90,7 +83,7 @@ const createItinearary = (difference, startDate) => {
   for (let i = 1; i <= difference; i++) {
     const Itinearay = {
       day: i,
-      id: uuidv1(),
+      _id: uuidv1(),
       date: startDate.add(1, 'days').format('DD-MMMMM-YYYY'),
       location: '',
       activity: ''
@@ -102,7 +95,8 @@ const createItinearary = (difference, startDate) => {
 
 const particularItinearayData = async (req, res) => {
   try {
-    const itineraryData = await trips.findById(req.params.id)
+    const _id = req.params.id
+    const itineraryData = await trips.findById(_id)
     res.status(200).json(itineraryData.itinearary)
   } catch (error) {
     res.status(404).json(error)

@@ -9,11 +9,11 @@ const orderSchema = new mongoose.Schema({
   done: {
     taskIds: [{ type: String }]
   },
-  columnOrder: [{ type: String }],
-  todos: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'todoSchema'
-  }
+  columnOrder: [{ type: String }]
+  // todos: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'todoSchema'
+  // }
 
 })
 const order = mongoose.model('order', orderSchema)

@@ -6,14 +6,12 @@ const tripSchema = new mongoose.Schema({
     defalut: 'none',
     trim: true
   },
-  _id: { type: String },
 
   startDate: {
     type: String,
     defalut: 'none',
     trim: true
   },
-
   endDate: {
     type: String,
     defalut: 'none',

@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 const trips = require('./tripSchema')
 mongoose.set('debug', true)
+mongoose.Promise = require('bluebird')
 const connection = mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true }, (err) => {
 // const connection = mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true }, (err) => {
   if (!err) {

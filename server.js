@@ -9,7 +9,8 @@ const session = require('express-session')
 const User = require('./models/user')
 const tripRoutes = require('./routes/route')
 require('dotenv').config()
-const PORT = process.env.PORT || 3000
+// const PORT = process.env.PORT || 3002
+const PORT = 3002
 const connection = require('./models/config')
 const MongoStore = require('connect-mongo')(session)
 const path = require('path')
@@ -62,7 +63,7 @@ passport.deserializeUser(function (id, done) {
 })
 
 // var userCookie
-app.post('/login',
+app.post('/api/login',
   passport.authenticate('local'),
   (req, res) => {
     const userName = req.user.name
@@ -78,23 +79,20 @@ app.get('/logout', (req, res) => {
   res.status(200).send('user logged Out')
 })
 
-app.get('/trip/count', (req, res) => {
+app.get('/api/trip/count', (req, res) => {
   // console.log(req)
   res.status(200).send({ tripCount: 2 })
 })
 
 const isLoggedIn = async (req, res, next) => {
-  if (req.session.passport !== undefined) {
+  if (req.session.passport !== undefined || req.isAuthenticated() === false) {
     return next()
   }
   res.status(401).send('loggin first')
 }
-// app.post('/trip/new', (req, res) => {
-//   console.log('++++++++')
-//   console.log(req)
-// })
-app.use('/', tripRoutes)
-app.use('/trip', isLoggedIn, tripRoutes)
+
+app.use('/api/trip', tripRoutes)
+// app.use('/api/trip', isLoggedIn, tripRoutes)
 app.use('/*', express.static(path.join(__dirname, 'views'), { maxAge: '30 days' }))
 
 server.listen(PORT, () => {
