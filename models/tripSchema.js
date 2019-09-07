@@ -24,7 +24,7 @@ const tripSchema = new mongoose.Schema({
     trim: true
   },
 
-  itinearary: [],
+  itinerary: [],
 
   members: [],
 

@@ -176,7 +176,7 @@ class CreateTrip extends React.Component {
         const response = await fetch(`${API_URL}/trip/new`, {
           method: "POST",
           body: JSON.stringify({
-            tripName,
+            tripName: tripName,
             startDate: tripStartDate,
             endDate: tripEndDate
           })

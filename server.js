@@ -91,8 +91,8 @@ const isLoggedIn = async (req, res, next) => {
   res.status(401).send('loggin first')
 }
 
-app.use('/api/trip', tripRoutes)
-app.use('/api/itinerary', tripRoutes)
+// app.use('/api/trip', tripRoutes)
+app.use('/api', tripRoutes)
 
 // app.use('/api/trip', isLoggedIn, tripRoutes)
 app.use('/*', express.static(path.join(__dirname, 'views'), { maxAge: '30 days' }))

@@ -5,7 +5,6 @@ const moment = require('moment')
 const uuidv1 = require('uuid/v1')
 var difference
 const postNewTrip = async (req, res) => {
-  console.log(req.body)
   try {
     var start = moment(req.body.startDate, 'DD-MM-YYYY')
     var end = moment(req.body.endDate, 'DD-MM-YYYY')
@@ -14,14 +13,14 @@ const postNewTrip = async (req, res) => {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
-      itinearary: [],
+      itinerary: [],
       admin: ''
     }
-    const startDate = moment(Trip.startDate, 'DD-MM-YYYY')
-    const newIti = createItinearary(Math.abs(difference), startDate)
-    Trip.itinearary.push(newIti)
+    const startDate = await moment(Trip.startDate, 'DD-MM-YYYY')
+    const newIti = await createItinerary(Math.abs(difference), startDate)
+    Trip.itinerary.push(newIti)
     const newTripData = await trips.create(Trip)
-    res.status(201).json(`data added successfully${newTripData}`) // i hav to semd id
+    res.status(201).json(`data added successfully${newTripData}`)
   } catch (error) {
     console.log(error)
     res.status(400).json(Object.create(error))
@@ -78,17 +77,17 @@ const deleteTrip = async (req, res) => {
   }
 }
 
-const createItinearary = (difference, startDate) => {
+const createItinerary = (difference, startDate) => {
   const itineraryArray = []
   for (let i = 1; i <= difference; i++) {
-    const Itinearay = {
+    const Itinerary = {
       day: i,
       _id: uuidv1(),
       date: startDate.add(1, 'days').format('DD-MMMMM-YYYY'),
       location: '',
-      activity: ''
+      activity: []
     }
-    itineraryArray.push(Itinearay)
+    itineraryArray.push(Itinerary)
   }
   return itineraryArray
 }
@@ -97,8 +96,8 @@ const particularItinearayData = async (req, res) => {
   try {
     const _id = req.params.id
     const itineraryData = await trips.findById(_id)
-    console
-    res.status(200).json({ itinerary: itineraryData })
+    const itinerary = itineraryData.itinerary
+    res.status(200).json({ itinerary: itinerary[0] })
   } catch (error) {
     res.status(404).json(error)
   }
@@ -148,13 +147,10 @@ const createTodo = async (req, res) => {
       id: uuidv1()
     }
     const newTodo = await todos.create(Todo)
-    console.log(newTodo)
     const todoData = { _id: newTodo.id, createdAt: newTodo.createdAt }
     let column = await order.find()
     if (column === undefined) { column = createOrder() }
-
     column[0].todo.taskIds.push(newTodo.id)
-    console.log(column[0])
     res.status(201).send(todoData)
   } catch (error) {
     console.log(error)
@@ -197,8 +193,8 @@ const columnOrderData = async (req, res) => {
 
 const updateTodoTask = async (req, res) => {
   try {
-    const userId = req.body.userId
-    const user = await todo.findById(userId)
+    // const userId = req.body.userId
+    // const user = await todo.findById(userId)
     const updatedTodo = await user.todo.findOneAndUpdate({ id: req.body.taskId },
       { text: req.body.text }, { new: true })
     res.status(200).json({ msg: 'Data Updated' })
@@ -209,7 +205,7 @@ const updateTodoTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    const user = await trips.findById(req.body.userId)
+    // const user = await trips.findById(req.body.userId)
     const deleteTodo = await user.todo.findOneAndDelete({ id: req.body.taskId })
     res.status(200).json(`task Deleted ${deleteTodo.tripName}`)
   } catch (error) {

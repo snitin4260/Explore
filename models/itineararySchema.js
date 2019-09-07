@@ -6,5 +6,5 @@ const itineararySchema = new mongoose.Schema({
   location: { type: String },
   activity: [{ task: { type: String } }]
 })
-const itinearary = mongoose.model('itinearary', itineararySchema)
-module.exports = itinearary
+const itinerary = mongoose.model('itinearary', itineararySchema)
+module.exports = itinerary
