@@ -22,26 +22,24 @@ const Container = styled.div`
 `;
 
 const LogoContainer = styled.div`
-display: inline-block;
-padding-top: 0.5rem;
-`
+  display: inline-block;
+  padding-top: 0.5rem;
+`;
 
 const IconContainer = styled.div`
- margin-right: 3rem;
- display: inline-flex;
- justify-content: center;
- align-items: center;
- cursor: pointer;
- position: relative;
- margin-left: auto;
- padding-top: 0.5rem;
+  margin-right: 3rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  margin-left: auto;
+  padding-top: 0.5rem;
 
- &:hover .option {
-   display: block;
- }
-
-`
-
+  &:hover .option {
+    display: block;
+  }
+`;
 
 const UserSvg = styled.svg`
   width: 4rem;
@@ -49,21 +47,20 @@ const UserSvg = styled.svg`
 `;
 
 const Name = styled.span`
- font-family: 'Roboto',sans-serif;
- font-size: 1.6rem;
- margin-right: 1rem;
- overflow: hidden;
- text-overflow: ellipsis;
- display: inline-block;
- max-width: 100px;
-`
+  font-family: "Roboto", sans-serif;
+  font-size: 1.6rem;
+  margin-right: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 100px;
+`;
 
 const LoginSignupContainer = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-margin-left: auto;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
 `;
 
 const OptionItem = styled.div`
@@ -78,6 +75,10 @@ const OptionItem = styled.div`
   &:last-of-type {
     margin-bottom: 0;
   }
+`;
+
+const SpecialOptionItem = styled(OptionItem)`
+  padding: 0;
 `;
 const OptionContainer = styled.div`
   display: none;
@@ -151,6 +152,11 @@ class Header extends React.Component {
               </UserSvg>
               <OptionContainer className="option">
                 <OptionItem>Profile</OptionItem>
+                <SpecialOptionItem>
+                  <Link className={styles.option_link} to="/trip/all">
+                    See trips
+                  </Link>
+                </SpecialOptionItem>
                 <OptionItem>Log Out</OptionItem>
               </OptionContainer>
             </IconContainer>
