@@ -19,6 +19,7 @@ html {
   font-size: 62.5%;
   --main-bg-color: rgb(28, 32, 34);
   --font-color: #34495e;
+  --todo-list-background: #009688;
 }
 
 .loadingDiv {

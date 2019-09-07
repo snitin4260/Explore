@@ -6,13 +6,13 @@ import styled from 'styled-components'
 const List = styled.div`
   flex: 0 0 30rem;
   margin-left: 1rem;
-  background-color: #e2e4e6;
+  background-color: var(--todo-list-background);
   border-radius: 0.5rem;
   padding: 1rem;
   &:last-of-type {
     margin-right: 1rem;
   }
-`
+`;
 
 const CardLoader = styled(Loader)`
   position: absolute;
@@ -22,21 +22,21 @@ const CardLoader = styled(Loader)`
 const CardTitile = styled.h2`
   font-size: 2rem;
   font-weight: bold;
-  background-color: #e2e4e6;
+  background-color: var(--todo-list-background);
   font-family: "Roboto", sans-serif;
   color: #333;
   margin-bottom: 1rem;
   padding: 0 10px;
   line-height: 3.6rem;
-`
+`;
 // overflow y should be applied here
 const CardsContainer = styled.ul`
   list-style-type: none;
-  background-color: #e2e4e6;
+  background-color: var(--todo-list-background);
   color: #333;
   padding: 0 10px;
   min-height: 5rem;
-`
+`;
 
 const Card = styled.li`
   background-color: #fff;
