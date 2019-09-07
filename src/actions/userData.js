@@ -14,6 +14,12 @@ export const getUsername = _ => async dispatch => {
     const response = await fetch(`${API_URL}/user`)
     const responseObject = await response.json()
     if (response.status === 200) {
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          userName: responseObject.userName
+        })
+      )
       dispatch({
         type: GET_USERNAME_SUCCESS,
         payload: {

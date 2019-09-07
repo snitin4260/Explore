@@ -11,16 +11,19 @@ const PageHeader = styled.header`
   background-color: black;
   color: white;
   padding: 0 0.6rem;
+  height: 6rem;
 `;
 const Container = styled.div`
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
   display: flex;
+  height: 100%;
 `;
 
 const LogoContainer = styled.div`
 display: inline-block;
+padding-top: 0.5rem;
 `
 
 const IconContainer = styled.div`
@@ -31,6 +34,7 @@ const IconContainer = styled.div`
  cursor: pointer;
  position: relative;
  margin-left: auto;
+ padding-top: 0.5rem;
 
  &:hover .option {
    display: block;
@@ -55,7 +59,9 @@ const Name = styled.span`
 `
 
 const LoginSignupContainer = styled.div`
-display: inline-block;
+display: flex;
+justify-content: center;
+align-items: center;
 margin-left: auto;
 
 `;
@@ -76,7 +82,7 @@ const OptionItem = styled.div`
 const OptionContainer = styled.div`
   display: none;
   position: absolute;
-  top: 50px;
+  top: 60px;
   right: 0;
   width: 200px;
   box-shadow: 0 6px 8px 0 rgba(0, 0, 0, 0.25);
