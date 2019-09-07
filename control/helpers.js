@@ -1,14 +1,21 @@
 const { trips } = require('../models/config')
 const todos = require('../models/todoSchema')
 const order = require('../models/orderSchema')
+const User = require('../models/user')
+const passport = require('passport')
 const moment = require('moment')
 const uuidv1 = require('uuid/v1')
 var difference
+
 const postNewTrip = async (req, res) => {
   try {
-    var start = moment(req.body.startDate, 'DD-MM-YYYY')
-    var end = moment(req.body.endDate, 'DD-MM-YYYY')
-    difference = (moment.duration(start.diff(end)).asDays())
+    const start = moment(req.body.startDate)
+    // .format('DD-MM-YYYY')
+    const end = moment(req.body.endDate)
+    // .format('DD-MM-YYYY')
+    console.log(start, end)
+    // difference = (moment.duration(start.diff(end)).asDays())
+    difference = start.diff(end, 'days')
     const Trip = {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
@@ -16,7 +23,8 @@ const postNewTrip = async (req, res) => {
       itinerary: [],
       admin: ''
     }
-    const startDate = await moment(Trip.startDate, 'DD-MM-YYYY')
+    // const startDate = await moment(Trip.startDate, 'DD-MM-YYYY')
+    const startDate = start
     const newIti = await createItinerary(Math.abs(difference), startDate)
     Trip.itinerary.push(newIti)
     const newTripData = await trips.create(Trip)
@@ -79,11 +87,11 @@ const deleteTrip = async (req, res) => {
 
 const createItinerary = (difference, startDate) => {
   const itineraryArray = []
-  for (let i = 1; i <= difference; i++) {
+  for (let i = 1; i <= (difference + 1); i++) {
     const Itinerary = {
       day: i,
       _id: uuidv1(),
-      date: startDate.add(1, 'days').format('DD-MMMMM-YYYY'),
+      date: startDate.add(1, 'days').format('DD-MM-YYYY'),
       location: '',
       activity: []
     }
@@ -139,6 +147,11 @@ const particularItinearayData = async (req, res) => {
 //   }
 // }
 
+const getUser = async (req, res) => {
+  // console.log(req.session)
+
+  console.log('+++' + req.sessionID)
+}
 // Todo logic
 const createTodo = async (req, res) => {
   try {
@@ -191,6 +204,9 @@ const columnOrderData = async (req, res) => {
   }
 }
 
+const getAllTodos = async (req, res) => {
+}
+
 const updateTodoTask = async (req, res) => {
   try {
     // const userId = req.body.userId
@@ -213,4 +229,4 @@ const deleteTask = async (req, res) => {
   }
 }
 
-module.exports = { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip }
+module.exports = { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser }

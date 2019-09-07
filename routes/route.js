@@ -1,7 +1,7 @@
 // import express from 'express'
 const express = require('express')
 const mail = require('../control/mail')
-const { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip } = require('../control/helpers')
+const { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser  } = require('../control/helpers')
 const { register } = require('../control/auth')
 const router = express.Router()
 
@@ -17,6 +17,7 @@ router.post('/todo/create/:tripId', createTodo)
 router.put('/todo/edit/:tripId', updateTodoTask)
 router.delete('/todo/delete/:tripId', deleteTask)
 router.post('/todo/dnd', columnOrderData)
+router.get('/user', getUser)
 // router.get('/count', countTrip)
 
 module.exports = router

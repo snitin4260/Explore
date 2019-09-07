@@ -37,6 +37,10 @@ const tripSchema = new mongoose.Schema({
     type: String,
     defalut: 'none',
     trim: true
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'user'
   }
 })
 const trips = mongoose.model('trips', tripSchema)
