@@ -5,6 +5,7 @@ import {
 } from '../actions/actionConstants'
 import { API_URL } from '../api'
 import { hideEditWindow } from './controlWindowState'
+import Column from '../components/Todo/Column'
 
 export default ({ tripId, todoItemId, columnId }) => {
   return async dispatch => {
@@ -17,13 +18,16 @@ export default ({ tripId, todoItemId, columnId }) => {
           todoItemId
         }
       })
+      const deleteObj = {
+        taskId: todoItemId,
+        columnId
+      }
       const response = await fetch(`${API_URL}/todo/delete/${tripId}`, {
         method: 'DELETE',
-        body: {
-          tripId,
-          taskId: todoItemId,
-          columnId
-        }
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(deleteObj)
       })
       if (response.status === 200) {
         dispatch({

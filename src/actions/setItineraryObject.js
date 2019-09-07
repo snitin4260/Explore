@@ -1,7 +1,7 @@
 import {
   SET_ITINERARY_TRIP_OBJECT,
   EDIT_ITINERARY_DATA
-} from "./actionConstants";
+} from './actionConstants'
 
 export default tripId => ({
   type: SET_ITINERARY_TRIP_OBJECT,

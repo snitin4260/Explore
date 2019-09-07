@@ -225,6 +225,7 @@ class ItineraryEdititem extends React.Component {
   }
 
   removeErrorMessage() {
+    
     if (this.state.validationError) {
       this.setState({
         validationError: ""
@@ -245,6 +246,7 @@ class ItineraryEdititem extends React.Component {
   }
 
   saveChanges = async _ => {
+    this.removeErrorMessage();
     const response = this.checkAllInputsAreValid();
     if (!response.state) {
       this.setState({
@@ -287,7 +289,8 @@ class ItineraryEdititem extends React.Component {
       }
     } catch (e) {
       this.setState({
-        serverError: "Server is down. Please try after some time"
+        serverError: "Server is down. Please try after some time",
+        isSendingData: false
       });
     }
   };
@@ -344,11 +347,6 @@ class ItineraryEdititem extends React.Component {
     }));
   };
 
-  checkZeroActivity() {
-    if (this.state.activity.length === 0) return true;
-    return false;
-  }
-
   render() {
     const { day, date } = this.props.itinerary;
     const {
@@ -364,7 +362,6 @@ class ItineraryEdititem extends React.Component {
     const buttonProps = {
       disabled: isSendingData
     };
-
 
     return (
       <>
