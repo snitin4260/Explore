@@ -22,9 +22,8 @@ function Root ({ store }) {
           <Route path="/trip" exact component={Trips} />
           <Route path="/trip/create" component={CreateTrip} />
           <Route path="/trip/all" component={AllTrip} />
-          <Route path="/trip/itinerary/edit" exact component={ItineraryEdit} />
+          <Route path="/trip/itinerary/edit/:id" exact component={ItineraryEdit} />
           <Route path="/trip/itinerary/:id" component={ItineraryDisplay} />
-
           <Route path="/trip/todo/:id" component={Todo} />
         </Switch>
       </Router>

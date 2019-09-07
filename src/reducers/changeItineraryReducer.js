@@ -41,6 +41,7 @@ export default (state = {}, action) => {
         trip.isLoading = true
       })
     }
+
     case GET_ITINERARY_DATA_SUCCESS: {
       return produce(state, draft => {
         const trip = draft[action.payload.tripId]

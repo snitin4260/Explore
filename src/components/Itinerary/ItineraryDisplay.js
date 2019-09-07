@@ -194,12 +194,13 @@ class ItineraryDisplay extends React.Component {
   }
 
   render() {
+     const { id } = this.props.match.params;
     if (this.state.redirectToEditItinerary) {
-      return <Redirect to={{ pathname: "/trip/itinerary/edit" , state: {
+      return <Redirect to={{ pathname: `/trip/itinerary/edit/${id}` , state: {
         tripId: this.props.match.params.id
       } }} />;
     }
-    const { id } = this.props.match.params;
+   
     const { itinerary, changeItinerarySelectOption } = this.props;
     const tripItinerary = itinerary[id];
     console.log(tripItinerary);

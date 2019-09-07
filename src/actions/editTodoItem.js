@@ -16,13 +16,16 @@ export default ({ tripId, todoItemId, text }) => async dispatch => {
     }
   })
   try {
+    const editObj = {
+      taskId: todoItemId,
+      text
+    }
     const response = await fetch(`${API_URL}/todo/edit/${tripId}`, {
       method: 'POST',
-      body: {
-        tripId,
-        taskId: todoItemId,
-        text
-      }
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(editObj)
     })
     if (response.status === 200) {
       dispatch({
