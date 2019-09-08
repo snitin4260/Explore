@@ -8,6 +8,9 @@ import Header from "../header/Header";
 import BackgroundContainer from "../BackgroundContainer/BackgroundContainer";
 import { changeItinerary } from "../../actions/setItineraryObject";
 import { SaveButton } from "./ItineraryEditItem";
+import setTripObject from "../../actions/setTripObject";
+import setItineraryObject from "../../actions/setItineraryObject";
+import getItineraryData from "../../actions/getItineraryData";
 
 const mapStateToProps = state => {
   const { itinerary } = state;
@@ -19,6 +22,16 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   changeItinerary: ({ tripId, _id, activity }) => {
     dispatch(changeItinerary({ tripId, _id, activity }));
+  },
+  setTripObject: tripId => {
+    dispatch(setTripObject(tripId));
+  },
+  setItineraryObject: tripId => {
+    dispatch(setItineraryObject(tripId));
+  },
+
+  getItineraryData: tripId => {
+    dispatch(getItineraryData(tripId));
   }
 });
 
@@ -44,7 +57,6 @@ const Title = styled.h1`
 
 class ItineraryEditContainer extends React.Component {
   state = {
-    redirectToTrips: false,
     redirectToDashBoard: false
   };
 
@@ -65,21 +77,14 @@ class ItineraryEditContainer extends React.Component {
   };
 
   render() {
-    const { location, itinerary, changeItinerary } = this.props;
-    if (this.state.redirectToTrips) {
-      return <Redirect to="/trip" />;
-    }
-
+    const { id } = this.props.match.params;
+    const { itinerary, changeItinerary } = this.props;
+    const tripItinerary = itinerary[id];
+    if (!tripItinerary) return null;
     if (this.state.redirectToDashBoard) {
-      return <Redirect to={`/trip/itinerary/${location.state.tripId}`} />;
+      return <Redirect to={`/trip/itinerary/${id}`} />;
     }
-
-    // react router is persisting state from another page even after refreshing page
-    if (!location.state || !itinerary[location.state.tripId]) {
-      return null;
-    }
-    const { tripId } = location.state;
-    const { data } = itinerary[tripId];
+    const { data } = itinerary[id];
     return (
       <>
         <Header />
@@ -97,7 +102,7 @@ class ItineraryEditContainer extends React.Component {
                 return (
                   <ItineraryEditItem
                     changeItinerary={changeItinerary}
-                    tripId={tripId}
+                    tripId={id}
                     key={data.day}
                     itinerary={data}
                   />

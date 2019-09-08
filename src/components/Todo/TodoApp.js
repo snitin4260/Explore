@@ -116,7 +116,7 @@ const Main = styled.main`
 const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr;
-  background: #0079bf;
+  /* background: #0079bf; */
   min-height: calc(100vh - 242px);
   overflow-x: auto;
   &::-webkit-scrollbar {
@@ -248,12 +248,13 @@ class TodoApp extends React.Component {
       isLoading
     } = this.getExactTripTodo();
     return (
+      // bg="#0079bf"
       <>
         {error.fetchingDataError ? (
           <div>Failed fetching</div>
         ) : (
           <>
-            <UserDashBoard bg="#0079bf">
+            <UserDashBoard >
               <Main>
                 <TodoTitle>Todo</TodoTitle>
                 {isLoading ? (

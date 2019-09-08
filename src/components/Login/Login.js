@@ -1,12 +1,21 @@
 import React from "react";
-import LogoHeader from "../logoHeader/LogoHeader";
-import InputLabelError from "../inputLabelError/InputLabelError";
+import { connect } from "react-redux";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import styles from "./Login.module.css";
-import { API_URL } from "../../api";
 import { Redirect } from "react-router-dom";
 import styled from "styled-components";
+
+import LogoHeader from "../logoHeader/LogoHeader";
+import InputLabelError from "../inputLabelError/InputLabelError";
+import styles from "./Login.module.css";
+import { API_URL } from "../../api";
+import { updateUsername } from "../../actions/userData";
+
+const mapDispatchToProps = dispatch => ({
+  updateUsername: name => {
+    dispatch(updateUsername(name));
+  }
+});
 
 const SuccessMessage = styled.div`
   width: 100%;
@@ -41,7 +50,7 @@ class Login extends React.Component {
                   .required("Email required"),
                 password: Yup.string().required("Password required")
               })}
-              onSubmit={async (values, { setSubmitting,setErrors }) => {
+              onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
                   const response = await fetch(`${API_URL}/login`, {
                     method: "POST",
@@ -50,18 +59,22 @@ class Login extends React.Component {
                     },
                     body: JSON.stringify(values)
                   });
-
+                  const responseObject = await response.json();
                   if (response.status === 200) {
+                    this.props.updateUsername(responseObject.userName);
+                    //update the localStorage
+                    localStorage.setItem(
+                      "user",
+                      JSON.stringify({
+                        userName: responseObject.userName
+                      })
+                    );
                     this.setState({
                       redirect: true
                     });
                   } else {
-                    const responseObject = await response.json();
-
                   }
-                } catch (e) {
-
-                }
+                } catch (e) {}
               }}
               initialValues={{ email: "", password: "" }}
             >
@@ -96,4 +109,7 @@ class Login extends React.Component {
     );
   }
 }
-export default Login;
+export default connect(
+  null,
+  mapDispatchToProps
+)(Login);

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
-  min-height: calc(100vh - 62px);
+  min-height: calc(100vh - 60px);
   padding: 2rem;
   position: relative;
   background: ${props => {
