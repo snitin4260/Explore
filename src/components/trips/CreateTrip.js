@@ -81,12 +81,12 @@ const ErrorDiv = styled.div`
   display: ${props => (props.show ? "block" : "none")};
 `;
 
-const CloseSvg = styled.svg`
+export const CloseSvg = styled.svg`
   width: 50%;
   height: 50%;
 `;
 
-const RounDiv = styled.button`
+export const RounDiv = styled.button`
   width: 5rem;
   height: 5rem;
   background: white;

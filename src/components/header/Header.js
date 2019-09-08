@@ -157,6 +157,11 @@ class Header extends React.Component {
                     See trips
                   </Link>
                 </SpecialOptionItem>
+                <SpecialOptionItem>
+                  <Link className={styles.option_link} to="/trip/create">
+                    Create a Trip
+                  </Link>
+                </SpecialOptionItem>
                 <OptionItem>Log Out</OptionItem>
               </OptionContainer>
             </IconContainer>
