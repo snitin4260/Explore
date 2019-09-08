@@ -27,6 +27,9 @@ const db = dbConn.db
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(staticify.middleware)
 app.use(cookieParser())
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use(session({
   store: new MongoStore({
     mongooseConnection: db
@@ -38,17 +41,20 @@ app.use(session({
   cookie: { maxAge: 60000 }
 }))
 
-app.use(passport.initialize())
-app.use(passport.session())
-
 app.use(function (req, res, next) {
   req.url = req.url.replace(/\/([^\/]+)\.[0-9a-f]+\.(css|js|jpg|png|gif|svg)$/, '/$1.$2')
   next()
 })
 
-// app.use(express.static('views'))
+// passport.serializeUser(function (user, done) {
+//   done(null, user.id)
+// })
 passport.serializeUser(function (user, done) {
-  done(null, user.id)
+  done(null, {
+    _id: user['id'],
+    userName: user['name'],
+    email: user['email']
+  })
 })
 
 passport.deserializeUser(function (id, done) {
@@ -64,14 +70,11 @@ app.post('/api/login',
     // console.log(req)
     const userName = req.user.name
     const _id = req.user.id
+    req.session.cookie.userId = _id
     res.status(200).send({ userName, _id })
   }
 )
-app.use(function (req, res, next) {
-  console.log(req.session)
-  console.log('===================')
-  console.log(req.user)
-})
+
 // Endpoint to logout
 app.get('/logout', (req, res) => {
   req.logout()
@@ -80,21 +83,26 @@ app.get('/logout', (req, res) => {
 })
 
 app.get('/api/trip/count', (req, res) => {
-  // console.log(req)
+  console.log(req.session)
   res.status(200).send({ tripCount: 2 })
 })
+// app.use(function (req, res, next) {
+//   console.log(req.session)
+//   console.log('===================')
+//   // console.log(req.user)
+//   console.log('+++' + req.headers.cookie)
+// })
 
 const isLoggedIn = async (req, res, next) => {
-  if (req.session.passport !== undefined || req.isAuthenticated() === false) {
+  if (req.session.passport !== undefined) {
     return next()
   }
   res.status(401).send('loggin first')
 }
 
-// app.use('/api/trip', tripRoutes)
-// app.use('/api', tripRoutes)
+app.use('/api', tripRoutes)
 
-app.use('/api', isLoggedIn, tripRoutes)
+// app.use('/api', isLoggedIn, tripRoutes)
 app.use('/*', express.static(path.join(__dirname, 'views'), { maxAge: '30 days' }))
 
 server.listen(PORT, () => {

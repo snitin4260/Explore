@@ -1,7 +1,7 @@
 // import express from 'express'
 const express = require('express')
 const mail = require('../control/mail')
-const { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser  } = require('../control/helpers')
+const { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser } = require('../control/helpers')
 const { register } = require('../control/auth')
 const router = express.Router()
 

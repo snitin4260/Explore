@@ -13,7 +13,6 @@ const postNewTrip = async (req, res) => {
     // .format('DD-MM-YYYY')
     const end = moment(req.body.endDate)
     // .format('DD-MM-YYYY')
-    console.log(start, end)
     // difference = (moment.duration(start.diff(end)).asDays())
     difference = start.diff(end, 'days')
     const Trip = {
@@ -30,7 +29,6 @@ const postNewTrip = async (req, res) => {
     const newTripData = await trips.create(Trip)
     res.status(201).json(`data added successfully${newTripData}`)
   } catch (error) {
-    console.log(error)
     res.status(400).json(Object.create(error))
   }
 }
@@ -38,7 +36,6 @@ const countTrip = async (req, res) => {
   try {
     res.status(200).json({ tripCount: 2 })
   } catch (error) {
-    console.log(error)
     res.status(404).json(error)
   }
 }
@@ -52,6 +49,7 @@ const tripsById = async (req, res) => {
   }
 }
 const allTrip = async (req, res) => {
+  console.log(req.session)
   try {
     const allTripsData = await trips.find()
     const allTripData = allTripsData.map(obj => {
@@ -113,7 +111,6 @@ const particularItinearayData = async (req, res) => {
 // const itineraryLocationUpdate = (id, data) => {
 //   trips.findById(id, (err, trips) => {
 //     if (err) return err
-//     console.log(trips)
 //   })
 // }
 
@@ -121,7 +118,6 @@ const particularItinearayData = async (req, res) => {
 //   try {
 //     const updatedLocationData = await trips.itinearary.findOneAndUpdate({ _id: req.body.id },
 //       { location: req.body.location }, { new: true })
-//     // console.log(req.body)
 //     res.status(200).json(updatedLocationData)
 //   } catch (error) {
 //     res.status(404).json(error)
@@ -132,7 +128,6 @@ const particularItinearayData = async (req, res) => {
 //   try {
 //     const neraryActivityUpdate = await trips.itinearary.findOneAndUpdate({ _id: req.body.id },
 //       { activity: req.body.activity }, { new: true })
-//     // console.log(req.body)
 //     res.status(200).json(neraryActivityUpdate)
 //   } catch (error) {
 //     res.status(404).json(error)
@@ -148,9 +143,7 @@ const particularItinearayData = async (req, res) => {
 // }
 
 const getUser = async (req, res) => {
-  // console.log(req.session)
 
-  console.log('+++' + req.sessionID)
 }
 // Todo logic
 const createTodo = async (req, res) => {
@@ -166,7 +159,6 @@ const createTodo = async (req, res) => {
     column[0].todo.taskIds.push(newTodo.id)
     res.status(201).send(todoData)
   } catch (error) {
-    console.log(error)
     res.status(400).json(error)
   }
 }
