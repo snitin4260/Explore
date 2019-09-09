@@ -46,22 +46,35 @@ app.use(function (req, res, next) {
   next()
 })
 
-// passport.serializeUser(function (user, done) {
-//   done(null, user.id)
-// })
 passport.serializeUser(function (user, done) {
-  done(null, {
-    _id: user['id'],
-    userName: user['name'],
-    email: user['email']
-  })
+  done(null, user.id)
 })
+// passport.serializeUser(function (user, done) {
+//   done(null, {
+//     _id: user['id'],
+//     userName: user['name'],
+//     email: user['email']
+//   })
+// })
 
 passport.deserializeUser(function (id, done) {
   User.getUserById(id, function (err, user) {
     done(err, user)
   })
 })
+
+// var sessions = function (req, res) {
+//   var temp = req.session.passport
+//   req.session.regenerate(function (err) {
+//     if (err) return err
+//     // req.session.passport is now undefined
+//     req.session.passport = temp
+//     req.session.save(function (err) {
+//       if (err) return err
+//       res.send(200)
+//     })
+//   })
+// }
 
 // var userCookie
 app.post('/api/login',
@@ -76,7 +89,7 @@ app.post('/api/login',
 )
 
 // Endpoint to logout
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
   req.logout()
   res.clearCookie('user_sid')
   res.status(200).send('user logged Out')

@@ -143,7 +143,10 @@ const particularItinearayData = async (req, res) => {
 // }
 
 const getUser = async (req, res) => {
-
+  console.log(req.session.user)
+  if (req.session.user === undefined) {
+    return res.status(401).json({ msg: 'user not found' })
+  }
 }
 // Todo logic
 const createTodo = async (req, res) => {
