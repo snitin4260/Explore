@@ -1,6 +1,7 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+
 import MainPage from './components/Mainpage/MainPage'
 import Register from './components/Register/Register'
 import Login from './components/Login/Login'
@@ -12,6 +13,7 @@ import ItineraryEdit from './components/Itinerary/ItineraryEditContainer'
 import Todo from './components/Todo/TodoApp'
 import Chat from './components/Chat/Chat'
 import JoinTrip from './components/trips/JoinTrip'
+import Profile from './components/Profile/Profile'
 
 function Root ({ store }) {
   return (
@@ -33,6 +35,7 @@ function Root ({ store }) {
           <Route path="/trip/todo/:id" component={Todo} />
           <Route path="/trip/chat/:id" component={Chat} />
           <Route path="/join/:id" component={JoinTrip} />
+          <Route path= "/profile" component ={Profile} />
         </Switch>
       </Router>
     </Provider>

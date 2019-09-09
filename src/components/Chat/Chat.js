@@ -7,7 +7,7 @@ import UserDashboard from "../UserdashBoard/UserDashBoard"
 class Chat extends React.Component {
     render() {
         return (
-            <UserDashboard>
+            <UserDashboard selected="chat">
                 Hi
             </UserDashboard>
         )

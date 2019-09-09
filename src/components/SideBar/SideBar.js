@@ -35,7 +35,9 @@ const Logo = styled.span`
 `;
 
 const Svg = styled.svg`
-  color: white;
+  color: ${props => {
+    return props.group === props.selected ? "rgba(40,116,240,0.8)" : "white";
+  }};
 `;
 
 class SideBar extends React.Component {
@@ -57,7 +59,7 @@ class SideBar extends React.Component {
 
   render() {
     const { id } = this.props.match.params;
-    const {history}= this.props
+    const {history,selected}= this.props
     return (
       <Container>
         <Logo
@@ -69,6 +71,8 @@ class SideBar extends React.Component {
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 576 512"
+            group="itinerary"
+            selected={selected}
           >
             <path
               fill="currentColor"
@@ -86,6 +90,8 @@ class SideBar extends React.Component {
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
+            group="todo"
+            selected={selected}
           >
             <path
               fill="currentColor"
@@ -104,6 +110,8 @@ class SideBar extends React.Component {
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
+            group="chat"
+            selected={selected}
           >
             <path
               fill="currentColor"
@@ -116,6 +124,8 @@ class SideBar extends React.Component {
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 640 512"
+            group="members"
+            selected={selected}
           >
             <path
               fill="currentColor"
@@ -124,14 +134,15 @@ class SideBar extends React.Component {
           </Svg>
         </Logo>
         {this.state.showInviteWindow && (
-          <Invite tripId={id} hideInviteWindow={this.hideInviteWindow}/>
-        
+          <Invite tripId={id} hideInviteWindow={this.hideInviteWindow} />
         )}
         <Logo onClick={this.showInviteWindow}>
           <Svg
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
+            group="invite"
+            selected={selected}
           >
             <path
               fill="currentColor"

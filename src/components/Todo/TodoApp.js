@@ -254,7 +254,7 @@ class TodoApp extends React.Component {
           <div>Failed fetching</div>
         ) : (
           <>
-            <UserDashBoard >
+            <UserDashBoard selected="todo">
               <Main>
                 <TodoTitle>Todo</TodoTitle>
                 {isLoading ? (
