@@ -25,6 +25,7 @@ const SuccessMessage = styled.div`
   font-size: 2rem;
   text-align: center;
   background: green;
+  font-family: 'Roboto',sans-serif;
 `;
 
 class Login extends React.Component {

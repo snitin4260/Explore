@@ -10,6 +10,8 @@ import AllTrip from './components/trips/AllTrip'
 import ItineraryDisplay from './components/Itinerary/ItineraryDisplay'
 import ItineraryEdit from './components/Itinerary/ItineraryEditContainer'
 import Todo from './components/Todo/TodoApp'
+import Chat from './components/Chat/Chat'
+import JoinTrip from './components/trips/JoinTrip'
 
 function Root ({ store }) {
   return (
@@ -22,9 +24,15 @@ function Root ({ store }) {
           <Route path="/trip" exact component={Trips} />
           <Route path="/trip/create" component={CreateTrip} />
           <Route path="/trip/all" component={AllTrip} />
-          <Route path="/trip/itinerary/edit/:id" exact component={ItineraryEdit} />
+          <Route
+            path="/trip/itinerary/edit/:id"
+            exact
+            component={ItineraryEdit}
+          />
           <Route path="/trip/itinerary/:id" component={ItineraryDisplay} />
           <Route path="/trip/todo/:id" component={Todo} />
+          <Route path="/trip/chat/:id" component={Chat} />
+          <Route path="/join/:id" component={JoinTrip} />
         </Switch>
       </Router>
     </Provider>
