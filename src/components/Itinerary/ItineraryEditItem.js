@@ -2,11 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import uuid from "uuid";
 
+
 import { API_URL } from "../../api";
 import Alert from "../Alert/Alert";
 import { Loader } from "../Todo/Modal";
 
-const ItineraryLoader = styled(Loader)`
+export const ItineraryLoader = styled(Loader)`
   position: absolute;
   top: 0;
   left: 210px;
@@ -94,7 +95,7 @@ const LocationInputContainer = styled.div`
   }
 `;
 
-const LocationInput = styled.input`
+export const LocationInput = styled.input`
   display: block;
   width: 100%;
   max-width: 40rem;
@@ -122,7 +123,7 @@ const ActivityInputItem = styled(LocationInput)`
   max-width: 60rem;
 `;
 
-const DeleteSvg = styled.svg`
+export const DeleteSvg = styled.svg`
   width: 2rem;
   height: 2rem;
   color: rgba(240, 52, 52, 0.9);
@@ -150,13 +151,14 @@ export const SaveButton = styled.button`
   padding: 0.7rem 1.4rem;
   display: inline-block;
   cursor: ${props => {
+    console.log(props)
     return props.isSendingData ? "not-allowed" : "pointer";
   }};
   font-size: 1.6rem;
   color: white;
 `;
 
-const AddSvgContainer = styled.span`
+export const AddSvgContainer = styled.span`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -167,7 +169,7 @@ const AddSvgContainer = styled.span`
   cursor: pointer;
 `;
 
-const AddSvg = styled.svg`
+export const AddSvg = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
   color: white;
@@ -183,6 +185,7 @@ const AddActivityContainer = styled.div`
 `;
 
 class ItineraryEdititem extends React.Component {
+  
   state = {
     isExpand: false,
     location: this.props.itinerary.location,
@@ -261,13 +264,17 @@ class ItineraryEdititem extends React.Component {
       this.setState({
         isSendingData: true
       });
+      const itineraryObj = {
+        _id: this.props.itinerary._id,
+        activity: this.state.activity,
+        tripId
+      };
       const response = await fetch(`${API_URL}/itinerary/edit/${tripId}`, {
         method: "POST",
-        body: JSON.stringify({
-          _id: this.props.itinerary._id,
-          activity: this.state.activity,
-          tripId
-        })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(itineraryObj)
       });
       const activityObj = await response.json();
       this.setState({

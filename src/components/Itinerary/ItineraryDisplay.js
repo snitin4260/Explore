@@ -99,6 +99,7 @@ const ActivityItemLi = styled.li`
   font-family: "Roboto", sans-serif;
   color: white;
   background: var(--main-bg-color);
+  overflow-wrap: break-word;
 `;
 
 const ItineraryHeader = styled.h1`
