@@ -5,7 +5,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const passport = require('passport')
 const cookieParser = require('cookie-parser')
-const session = require('express-session')
+let session = require('express-session')
 const User = require('./models/user')
 const tripRoutes = require('./routes/route')
 require('dotenv').config()
@@ -27,8 +27,6 @@ const db = dbConn.db
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(staticify.middleware)
 app.use(cookieParser())
-app.use(passport.initialize())
-app.use(passport.session())
 
 app.use(session({
   store: new MongoStore({
@@ -40,6 +38,9 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 60000 }
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(function (req, res, next) {
   req.url = req.url.replace(/\/([^\/]+)\.[0-9a-f]+\.(css|js|jpg|png|gif|svg)$/, '/$1.$2')
@@ -63,19 +64,6 @@ passport.deserializeUser(function (id, done) {
   })
 })
 
-// var sessions = function (req, res) {
-//   var temp = req.session.passport
-//   req.session.regenerate(function (err) {
-//     if (err) return err
-//     // req.session.passport is now undefined
-//     req.session.passport = temp
-//     req.session.save(function (err) {
-//       if (err) return err
-//       res.send(200)
-//     })
-//   })
-// }
-
 // var userCookie
 app.post('/api/login',
   passport.authenticate('local'),
@@ -83,7 +71,8 @@ app.post('/api/login',
     // console.log(req)
     const userName = req.user.name
     const _id = req.user.id
-    req.session.cookie.userId = _id
+    req.session['userId'] = _id
+    res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
     res.status(200).send({ userName, _id })
   }
 )
@@ -110,7 +99,7 @@ const isLoggedIn = async (req, res, next) => {
   if (req.session.passport !== undefined) {
     return next()
   }
-  res.status(401).send('loggin first')
+  res.status(401).send('User Not Logged In')
 }
 
 app.use('/api', tripRoutes)

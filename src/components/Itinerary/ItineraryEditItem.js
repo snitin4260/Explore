@@ -267,7 +267,7 @@ class ItineraryEdititem extends React.Component {
       const itineraryObj = {
         _id: this.props.itinerary._id,
         activity: this.state.activity,
-        tripId
+        
       };
       const response = await fetch(`${API_URL}/itinerary/edit/${tripId}`, {
         method: "POST",

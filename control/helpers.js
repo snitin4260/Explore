@@ -10,9 +10,7 @@ var difference
 const postNewTrip = async (req, res) => {
   try {
     const start = moment(req.body.startDate)
-    // .format('DD-MM-YYYY')
     const end = moment(req.body.endDate)
-    // .format('DD-MM-YYYY')
     // difference = (moment.duration(start.diff(end)).asDays())
     difference = start.diff(end, 'days')
     const Trip = {
@@ -20,9 +18,9 @@ const postNewTrip = async (req, res) => {
       startDate: req.body.startDate,
       endDate: req.body.endDate,
       itinerary: [],
-      admin: ''
+      admin: 'req.cookies.userId',
+      member: []
     }
-    // const startDate = await moment(Trip.startDate, 'DD-MM-YYYY')
     const startDate = start
     const newIti = await createItinerary(Math.abs(difference), startDate)
     Trip.itinerary.push(newIti)
@@ -49,7 +47,7 @@ const tripsById = async (req, res) => {
   }
 }
 const allTrip = async (req, res) => {
-  console.log(req.session)
+  console.log(req.user)
   try {
     const allTripsData = await trips.find()
     const allTripData = allTripsData.map(obj => {
@@ -108,6 +106,10 @@ const particularItinearayData = async (req, res) => {
     res.status(404).json(error)
   }
 }
+
+// const itineraryData = async (req, res) =>{
+//   const tripData = await trips.findById(req.params.tripId)
+// }
 // const itineraryLocationUpdate = (id, data) => {
 //   trips.findById(id, (err, trips) => {
 //     if (err) return err
@@ -143,10 +145,9 @@ const particularItinearayData = async (req, res) => {
 // }
 
 const getUser = async (req, res) => {
-  console.log(req.session.user)
-  if (req.session.user === undefined) {
-    return res.status(401).json({ msg: 'user not found' })
-  }
+  const currentUser = User.findById(req.cookies.userId)
+  if (currentUser) { return res.status(200).json({ userName: currentUser.name }) }
+  res.status(401).json({ msg: 'user not found' })
 }
 // Todo logic
 const createTodo = async (req, res) => {
@@ -200,13 +201,14 @@ const columnOrderData = async (req, res) => {
 }
 
 const getAllTodos = async (req, res) => {
+
 }
 
 const updateTodoTask = async (req, res) => {
   try {
     // const userId = req.body.userId
     // const user = await todo.findById(userId)
-    const updatedTodo = await user.todo.findOneAndUpdate({ id: req.body.taskId },
+    const updatedTodo = await User.todo.findOneAndUpdate({ id: req.body.taskId },
       { text: req.body.text }, { new: true })
     res.status(200).json({ msg: 'Data Updated' })
   } catch (error) {
@@ -217,7 +219,7 @@ const updateTodoTask = async (req, res) => {
 const deleteTask = async (req, res) => {
   try {
     // const user = await trips.findById(req.body.userId)
-    const deleteTodo = await user.todo.findOneAndDelete({ id: req.body.taskId })
+    const deleteTodo = await User.todo.findOneAndDelete({ id: req.body.taskId })
     res.status(200).json(`task Deleted ${deleteTodo.tripName}`)
   } catch (error) {
     res.status(404).json(error)
