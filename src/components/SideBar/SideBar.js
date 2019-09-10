@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
-import Invite from './Invite'
+import Invite from "../Invite/Invite"
 
 const Container = styled.div`
   position: fixed;
