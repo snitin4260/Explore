@@ -107,9 +107,16 @@ const particularItinearayData = async (req, res) => {
   }
 }
 
-// const itineraryData = async (req, res) =>{
-//   const tripData = await trips.findById(req.params.tripId)
-// }
+const itineraryData = async (req, res) => {
+  try {
+    const tripData = await trips.findById(req.params.tripId)
+    const itineraryUpdated = await tripData.itinerary[0].findOneAndUpdate({ _id: req.body._id },
+      { activity: req.body.activity, location: req.body.location }, { new: true })
+    res.status(200).json({ itinerary: itineraryUpdated })
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
 // const itineraryLocationUpdate = (id, data) => {
 //   trips.findById(id, (err, trips) => {
 //     if (err) return err
@@ -149,7 +156,13 @@ const getUser = async (req, res) => {
   if (currentUser) { return res.status(200).json({ userName: currentUser.name }) }
   res.status(401).json({ msg: 'user not found' })
 }
+
 // Todo logic
+
+const getAllTodos = async (req, res) => {
+
+}
+
 const createTodo = async (req, res) => {
   try {
     const Todo = {
@@ -200,10 +213,6 @@ const columnOrderData = async (req, res) => {
   }
 }
 
-const getAllTodos = async (req, res) => {
-
-}
-
 const updateTodoTask = async (req, res) => {
   try {
     // const userId = req.body.userId
@@ -226,4 +235,4 @@ const deleteTask = async (req, res) => {
   }
 }
 
-module.exports = { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser }
+module.exports = { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser, itineraryData }

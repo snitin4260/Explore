@@ -8,8 +8,8 @@ const todoSchema = new Schema({
     default: Date.now
   },
   user: {
-    type: Schema.ObjectId,
-    ref: 'user'
+    type: String,
+    required: true
   },
   trip: {
     type: Schema.ObjectId,
