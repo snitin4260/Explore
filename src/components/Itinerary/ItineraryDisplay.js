@@ -207,7 +207,7 @@ class ItineraryDisplay extends React.Component {
     const { isLoading, error, selectedOption } = tripItinerary;
     return (
       <>
-        <UserDashBoard bg="rgba(103, 146, 103, 0.2)">
+        <UserDashBoard selected="itinerary" bg="rgba(103, 146, 103, 0.2)">
           <Main>
             {error ? (
               <div>Failed loading page </div>

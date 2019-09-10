@@ -151,7 +151,12 @@ class Header extends React.Component {
                 ></path>
               </UserSvg>
               <OptionContainer className="option">
-                <OptionItem>Profile</OptionItem>
+                <SpecialOptionItem>
+                  {" "}
+                  <Link className={styles.option_link} to="/profile">
+                    Profile
+                  </Link>
+                </SpecialOptionItem>
                 <SpecialOptionItem>
                   <Link className={styles.option_link} to="/trip/all">
                     See trips

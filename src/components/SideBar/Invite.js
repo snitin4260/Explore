@@ -49,6 +49,12 @@ const InviteCloseSvg = styled(CloseSvg)`
 
 const Content = styled.div`
   margin-top: 9rem;
+  @media (max-width: 400px) {
+    & {
+      padding: 0.5rem;
+      padding-right: 1rem;
+    }
+  }
 `;
 
 const Container = styled.div`
@@ -94,12 +100,11 @@ const InviteInput = styled(LocationInput)`
 `;
 
 const InviteButton = styled(SaveButton)`
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
 `;
 
 const InviteButtonConatiner = styled.div`
-  margin-top: 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
   position: relative;
 `;
 

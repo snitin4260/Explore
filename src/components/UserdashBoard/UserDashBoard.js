@@ -14,12 +14,12 @@ const InnerContainer = styled.div`
 
 class UserDashBoard extends React.Component {
   render () {
-    const { bg } = this.props
+    const { bg,selected } = this.props
     return (
       <Container>
         <InnerContainer>
           <Header />
-          <SideBar />
+          <SideBar selected={selected}/>
           <BackgroundContainer bg={bg}>
             {this.props.children}
           </BackgroundContainer>

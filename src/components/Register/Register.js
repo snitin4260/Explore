@@ -4,7 +4,6 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import styles from "../Login/Login.module.css";
 import InputLabelError from "../inputLabelError/InputLabelError";
-import { withRouter } from "react-router-dom";
 import { API_URL } from "../../api";
 import { Redirect } from "react-router-dom";
 
