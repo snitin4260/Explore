@@ -16,26 +16,36 @@ export default tripId => async dispatch => {
   try {
     const response = await fetch(`${API_URL}/itinerary/${tripId}`)
     const data = await response.json()
-    const { itinerary } = data
-    const { day, date, location } = itinerary[0]
-    const label = `Day ${day}| ${date} ${location}`
-    dispatch({
-      type: GET_ITINERARY_DATA_SUCCESS,
-      payload: {
-        tripId,
-        data: itinerary,
-        selectedOption: {
-          label,
-          value: 1
+    if (response.status === 200) {
+      const { itinerary } = data
+      const { day, date, location } = itinerary[0]
+      const label = `Day ${day}| ${date} ${location}`
+      dispatch({
+        type: GET_ITINERARY_DATA_SUCCESS,
+        payload: {
+          tripId,
+          data: itinerary,
+          selectedOption: {
+            label,
+            value: 1
+          }
         }
-      }
-    })
+      })
+    } else {
+      dispatch({
+        type: GET_ITINERARY_DATA_FAIL,
+        payload: {
+          tripId,
+          error: data.msg
+        }
+      })
+    }
   } catch (e) {
     dispatch({
       type: GET_ITINERARY_DATA_FAIL,
       payload: {
         tripId,
-        error: e
+        error: 'Server is down.Please try after some time'
       }
     })
   }
