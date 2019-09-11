@@ -1,29 +1,30 @@
 const { trips } = require('../models/config')
 const todos = require('../models/todoSchema')
 const order = require('../models/orderSchema')
+const itinerarys = require('../models/itineararySchema')
 const User = require('../models/user')
 const passport = require('passport')
 const moment = require('moment')
 const uuidv1 = require('uuid/v1')
-var difference
+const mongoose = require('mongoose')
 
 const postNewTrip = async (req, res) => {
   try {
-    const start = moment(req.body.startDate)
-    const end = moment(req.body.endDate)
+    // const start = moment(req.body.startDate)
+    // const end = moment(req.body.endDate)
     // difference = (moment.duration(start.diff(end)).asDays())
-    difference = start.diff(end, 'days')
+    // difference = start.diff(end, 'days')
     const Trip = {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
-      itinerary: [],
-      admin: 'req.cookies.userId',
+      // itinerary: [],
+      admin: req.cookies.userId,
       member: []
     }
-    const startDate = start
-    const newIti = await createItinerary(Math.abs(difference), startDate)
-    Trip.itinerary.push(newIti)
+    // const startDate = start
+    // const newIti = await createItinerary(Math.abs(difference), startDate)
+    // Trip.itinerary.push(newIti)
     const newTripData = await trips.create(Trip)
     res.status(201).json(`data added successfully${newTripData}`)
   } catch (error) {
@@ -50,6 +51,7 @@ const allTrip = async (req, res) => {
   console.log(req.user)
   try {
     const allTripsData = await trips.find()
+    // console.log(allTripsData)
     const allTripData = allTripsData.map(obj => {
       const trips = {}
       trips['tripName'] = obj.tripName
@@ -81,42 +83,128 @@ const deleteTrip = async (req, res) => {
   }
 }
 
-const createItinerary = (difference, startDate) => {
+// const createItinerary = (difference, startDate) => {
+//   const itineraryArray = []
+//   for (let i = 1; i <= (difference + 1); i++) {
+//     const Itinerary = {
+//       day: i,
+//       _id: uuidv1(),
+//       date: startDate.add(1, 'days').format('DD-MM-YYYY'),
+//       location: '',
+//       activity: []
+//     }
+//     itineraryArray.push(Itinerary)
+//   }
+//   return itineraryArray
+// }
+
+const particularItinearayData = async (req, res) => {
+  try {
+    const id = req.params.id
+    const itinerary1 = await itinerarys.find({ tripId: id })
+    if (itinerary1.length === 0) {
+      console.log('im in')
+      const _id = req.params.id
+      const particularTrip = await trips.findById(_id)
+      const start = moment(particularTrip.startDate)
+      const end = moment(particularTrip.endDate)
+      const difference = start.diff(end, 'days')
+      const itidata = await itineraryLoop(start, Math.abs(difference), particularTrip._id)
+      const itineraryData = await itinerarys.create(itidata)
+      const itinerary = await itineraryData.map(item => {
+        const itinerary = {}
+        itinerary['day'] = item.day
+        itinerary['_id'] = item._id
+        itinerary['date'] = item.date
+        itinerary['location'] = item.location
+        itinerary['activity'] = item.activity
+        return itinerary
+      })
+      res.status(201).json({ itinerary })
+    } else {
+      const result = await itinerarys.find({ tripId: id })
+      // console.log('++' + result)
+      const itinerary = await result.map(item => {
+        const itinerary = {}
+        itinerary['day'] = item.day
+        itinerary['_id'] = item._id
+        itinerary['date'] = item.date
+        itinerary['location'] = item.location
+        itinerary['activity'] = item.activity
+        return itinerary
+      })
+      res.status(201).json({ itinerary })
+    }
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+const itineraryLoop = (start, difference, id) => {
   const itineraryArray = []
   for (let i = 1; i <= (difference + 1); i++) {
     const Itinerary = {
       day: i,
       _id: uuidv1(),
-      date: startDate.add(1, 'days').format('DD-MM-YYYY'),
-      location: '',
-      activity: []
+      date: start.add(1, 'days').format('DD-MM-YYYY'),
+      location: ' ',
+      activity: [],
+      tripId: id
     }
     itineraryArray.push(Itinerary)
   }
   return itineraryArray
 }
 
-const particularItinearayData = async (req, res) => {
+const itineraryData = async (req, res) => {
   try {
-    const _id = req.params.id
-    const itineraryData = await trips.findById(_id)
-    const itinerary = itineraryData.itinerary
-    res.status(200).json({ itinerary: itinerary[0] })
+    const dayId = req.body._id
+    const iLocation = req.body.location
+    const iActivity = req.body.activity
+    // console.log(req.body)
+    const id = req.params.id
+    const itinerary = await itinerarys.find({ tripId: id })
+    // console.log(itinerary)
+    for (const x of itinerary) {
+      // console.log(x.id)
+      // console.log(dayId)
+      console.log(iLocation)
+      console.log(iActivity)
+
+      // console.log(x.id === dayId)
+      if (x.id === dayId) {
+        // const query = { _id: x.id }
+        const re = await itinerarys.findOneAndUpdate({ _id: x.id }, { activity: iActivity, location: iLocation })
+        console.log(re)
+      }
+      // const itinerary22 = await itinerarys.find({ tripId: id })
+    }
+    res.status(200).json({ msg: 'data updated' })
   } catch (error) {
+    console.log(error)
     res.status(404).json(error)
   }
 }
 
-const itineraryData = async (req, res) => {
-  try {
-    const tripData = await trips.findById(req.params.tripId)
-    const itineraryUpdated = await tripData.itinerary[0].findOneAndUpdate({ _id: req.body._id },
-      { activity: req.body.activity, location: req.body.location }, { new: true })
-    res.status(200).json({ itinerary: itineraryUpdated })
-  } catch (error) {
-    res.status(400).json(error)
-  }
-}
+// const itineraryData = async (req, res) => {
+//   // console.log(req.body)
+//   try {
+//     const _id = req.params.id
+//     const tripData = await trips.findById(_id)
+//     // console.log(tripData.itinerary)
+//     const itinerary = tripData.itinerary[0]
+//     // console.log(itinerary)
+//     for (const _id of itinerary) {
+//       if (_id === req.body._id) {
+//         itinerary.activity = req.body.activity
+//         tripData.location = req.body.location
+//       }
+//     }
+//     res.status(200).json({ msg: 'data updated' })
+//   } catch (error) {
+//     // console.log(error)
+//     res.status(400).json(error)
+//   }
+// }
 // const itineraryLocationUpdate = (id, data) => {
 //   trips.findById(id, (err, trips) => {
 //     if (err) return err
