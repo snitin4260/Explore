@@ -5,6 +5,7 @@ import changeTripDataReducer from './changeTripDataReducer'
 import changeItineraryDataReducer from './changeItineraryReducer'
 import changeTodoDataReducer from './changeTodoDataReducer'
 import userDataReducer from './userDataReducer'
+import chatReducer from './chatReducer'
 
 export default combineReducers({
   inititalTripCountDetail: getTripCountReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
   tripData: changeTripDataReducer,
   itinerary: changeItineraryDataReducer,
   todo: changeTodoDataReducer,
-  user: userDataReducer
+  user: userDataReducer,
+  chat: chatReducer
 })

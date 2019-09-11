@@ -202,7 +202,6 @@ class ItineraryDisplay extends React.Component {
    
     const { itinerary, changeItinerarySelectOption } = this.props;
     const tripItinerary = itinerary[id];
-    console.log(tripItinerary);
     if (!tripItinerary) return null;
     const { isLoading, error, selectedOption } = tripItinerary;
     return (

@@ -19,15 +19,17 @@ io.on("connection", function (socket) {
             socketid: socket.id
         }
         users.push(userObj);
+        //make broadcast here
         io.emit('all-users', users);
 
     });
     socket.on('typing', (data)=>{
-        socket.broadcast.emit('tying', {nickname: socket.nickname})
+        socket.broadcast.emit('typing', {nickname: socket.nickname})
     })
 
     socket.on('send-message', function (data) {
         //socket.broadcast.emit('message-received', data);
+        // make broadcast  here
         io.emit('message-received', data);
     });
 
