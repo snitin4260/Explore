@@ -141,6 +141,27 @@ const Lists = styled.div`
     align-self: stretch;
   }
 `;
+
+const LoaderContainer = styled.div`
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+
+`
+
+const LoaderInput = styled.div`
+  flex: 0 0 2rem;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+`;
+const LoaderColumnConatiner = styled.div`
+ display: grid;
+ grid-template-columns: repeat(3, minmax(100px, 300px));
+ grid-template-rows: 300px;
+ grid-column-gap: 10px;
+`;
+
 /*************** styles end */
 
 class TodoApp extends React.Component {
@@ -257,7 +278,14 @@ class TodoApp extends React.Component {
               <Main>
                 <TodoTitle>Todo</TodoTitle>
                 {isLoading ? (
-                  <div>Loading</div>
+                  <LoaderContainer>
+                    <LoaderInput className="loadingDiv"></LoaderInput>
+                    <LoaderColumnConatiner>
+                      <div className="loadingDiv" />
+                      <div className="loadingDiv" />
+                      <div className="loadingDiv" />
+                    </LoaderColumnConatiner>
+                  </LoaderContainer>
                 ) : (
                   <>
                     <TodoInput
