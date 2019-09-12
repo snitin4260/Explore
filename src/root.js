@@ -31,7 +31,6 @@ function Root ({ store }) {
           <PrivateRoute path="/trip/itinerary/edit/:id" component={ItineraryEdit} />
           <PrivateRoute path="/trip/itinerary/:id" component={ItineraryDisplay} />
           <PrivateRoute path="/trip/todo/:id" component={Todo} />
-          {/* <Route path="/trip/todo/:id" component={Todo} /> */}
           <PrivateRoute path="/trip/chat/:id" component={Chat} />
           <PrivateRoute path="/join/:id" component={JoinTrip} />
           <PrivateRoute path="/profile" component={Profile} />

@@ -4,8 +4,11 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 
 import styles from "./Header.module.css";
-import { getUsernameLs } from "../../util/index";
+import { getUsernameLs,clearUsername } from "../../util/index";
 import { getUsername } from "../../actions/userData";
+import {API_URL} from '../../api/index'
+
+
 
 const PageHeader = styled.header`
   background-color: black;
@@ -103,6 +106,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class Header extends React.Component {
+  state = {
+    logOutError: false,
+    logOutErrorMessage: ""
+  };
   componentDidMount() {
     const { user, getUsername } = this.props;
     if (user.userName) {
@@ -114,6 +121,35 @@ class Header extends React.Component {
 
     getUsername();
   }
+
+  handleLogOut = async _ => {
+    //make api request
+    try {
+      const response = await fetch(`${API_URL}/logout`, {
+        method: "POST"
+      });
+      const responseObject = await response.json();
+      if (response.status !== 200) {
+        this.setState({
+          logOutError: true,
+          logOutErrorMessage: responseObject.msg
+        });
+             return;
+      }
+ 
+    } catch (e) {
+      this.setState({
+        logOutError: true,
+        logOutErrorMessage: "Server is down. Please try after some time"
+      });
+      return;
+    }
+
+    // delete from local storage
+    clearUsername();
+    // refresh and redirect to login
+    window.location.reload();
+  };
   render() {
     const userFromLs = getUsernameLs();
     const { userName, isFetchingData, fetchError } = this.props.user;
@@ -139,7 +175,7 @@ class Header extends React.Component {
           )}
           {(userName || userFromLs) && (
             <IconContainer>
-              <Name>{(userName || userFromLs.userName).slice(0,10)}...</Name>
+              <Name>{(userName || userFromLs.userName).slice(0, 10)}...</Name>
               <UserSvg
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
@@ -167,7 +203,7 @@ class Header extends React.Component {
                     Create a Trip
                   </Link>
                 </SpecialOptionItem>
-                <OptionItem>Log Out</OptionItem>
+                <OptionItem onClick={this.handleLogOut}>Log Out</OptionItem>
               </OptionContainer>
             </IconContainer>
           )}
