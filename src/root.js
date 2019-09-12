@@ -14,6 +14,7 @@ import Todo from './components/Todo/TodoApp'
 import Chat from './components/Chat/Chat'
 import JoinTrip from './components/trips/JoinTrip'
 import Profile from './components/Profile/Profile'
+import NoMatch from './components/NoMatch'
 
 function Root ({ store }) {
   return (
@@ -28,14 +29,14 @@ function Root ({ store }) {
           <Route path="/trip/all" component={AllTrip} />
           <Route
             path="/trip/itinerary/edit/:id"
-            exact
             component={ItineraryEdit}
           />
           <Route path="/trip/itinerary/:id" component={ItineraryDisplay} />
           <Route path="/trip/todo/:id" component={Todo} />
           <Route path="/trip/chat/:id" component={Chat} />
           <Route path="/join/:id" component={JoinTrip} />
-          <Route path= "/profile" component ={Profile} />
+          <Route path="/profile" component={Profile} />
+          <Route component={NoMatch} />
         </Switch>
       </Router>
     </Provider>
