@@ -135,12 +135,12 @@ const ItineraryButton = styled.button`
 `;
 
 const NoActivityDisplay = styled.div`
- font-size: 2rem;
- font-family: 'Roboto',sans-serif;
- color: black;
- margin-top: 2rem;
- text-align: center;
-`
+  font-size: 2rem;
+  font-family: "Roboto", sans-serif;
+  color: black;
+  margin-top: 2rem;
+  text-align: center;
+`;
 
 class ItineraryDisplay extends React.Component {
   state = {
@@ -220,8 +220,13 @@ class ItineraryDisplay extends React.Component {
     const { itinerary, changeItinerarySelectOption } = this.props;
     const tripItinerary = itinerary[id];
     if (!tripItinerary) return null;
-    const { isLoading, error, selectedOption, errorMessage } = tripItinerary;
-    console.log(error);
+    const {
+      isLoading,
+      error,
+      selectedOption,
+      errorMessage,
+      isAdmin
+    } = tripItinerary;
     return (
       <>
         <UserDashBoard selected="itinerary" bg="rgba(103, 146, 103, 0.2)">
@@ -240,17 +245,19 @@ class ItineraryDisplay extends React.Component {
                 ) : (
                   <>
                     <ItineraryHeader>Itinerary</ItineraryHeader>
-                    <ButtonContainer>
-                      <ItineraryButton
-                        onClick={() => {
-                          this.setState({
-                            redirectToEditItinerary: true
-                          });
-                        }}
-                      >
-                        Edit
-                      </ItineraryButton>
-                    </ButtonContainer>
+                    {isAdmin && (
+                      <ButtonContainer>
+                        <ItineraryButton
+                          onClick={() => {
+                            this.setState({
+                              redirectToEditItinerary: true
+                            });
+                          }}
+                        >
+                          Edit
+                        </ItineraryButton>
+                      </ButtonContainer>
+                    )}
                     <SelectContainer>
                       <Select
                         styles={customSelectStyles}

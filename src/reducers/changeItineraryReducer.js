@@ -15,6 +15,7 @@ export default (state = {}, action) => {
         draft[action.payload.tripId] = {
           error: false,
           errorMessage:'',
+          iAdmin: false,
           isLoading: true,
           data: [],
           selectedOption: {
@@ -49,6 +50,7 @@ export default (state = {}, action) => {
         trip.isLoading = false
         trip.data = action.payload.data
         trip.selectedOption = action.payload.selectedOption
+        trip.isAdmin = action.payload.isAdmin
       })
     }
 

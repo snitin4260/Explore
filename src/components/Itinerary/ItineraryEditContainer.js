@@ -81,10 +81,16 @@ class ItineraryEditContainer extends React.Component {
     const { itinerary, changeItinerary } = this.props;
     const tripItinerary = itinerary[id];
     if (!tripItinerary) return null;
+    const { data, isAdmin } = itinerary[id];
+
     if (this.state.redirectToDashBoard) {
       return <Redirect to={`/trip/itinerary/${id}`} />;
     }
-    const { data } = itinerary[id];
+    if (!isAdmin) {
+      this.redirectToDashBoard();
+      return null;
+    }
+
     return (
       <>
         <Header />

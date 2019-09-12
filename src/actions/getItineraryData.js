@@ -17,7 +17,7 @@ export default tripId => async dispatch => {
     const response = await fetch(`${API_URL}/itinerary/${tripId}`)
     const data = await response.json()
     if (response.status === 200) {
-      const { itinerary } = data
+      const { itinerary,isAdmin } = data
       const { day, date, location } = itinerary[0]
       const label = `Day ${day}| ${date} ${location}`
       dispatch({
@@ -28,8 +28,10 @@ export default tripId => async dispatch => {
           selectedOption: {
             label,
             value: 1
-          }
+          },
+          isAdmin
         }
+
       })
     } else {
       dispatch({
