@@ -25,7 +25,7 @@ const SuccessMessage = styled.div`
   font-size: 2rem;
   text-align: center;
   background: green;
-  font-family: 'Roboto',sans-serif;
+  font-family: "Roboto", sans-serif;
 `;
 
 class Login extends React.Component {
@@ -74,8 +74,15 @@ class Login extends React.Component {
                       redirect: true
                     });
                   } else {
+                    setErrors({
+                      password: responseObject.msg
+                    });
                   }
-                } catch (e) {}
+                } catch (e) {
+                  setErrors({
+                    password: "Server is down.Please try after some time"
+                  });
+                }
               }}
               initialValues={{ email: "", password: "" }}
             >

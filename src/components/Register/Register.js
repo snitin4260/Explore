@@ -39,7 +39,7 @@ class Register extends React.Component {
                   .required("Email required"),
                 name: Yup.string().required("Name required")
               })}
-              onSubmit={async (values, { setSubmitting }) => {
+              onSubmit={async (values, { setSubmitting,setErrors }) => {
                 try {
                 const response = await fetch(`${API_URL}/register`, {
                   method: "POST",
@@ -54,10 +54,17 @@ class Register extends React.Component {
                   })
                 } else {
                   const responseData = await response.json();
+                  setErrors({
+                    password: responseData.msg
+                    
+                  })
                   
                 }
               }
               catch(e) {
+                setErrors({
+                  password: 'Server is down.Please try after some time'
+                })
 
               }
               }}

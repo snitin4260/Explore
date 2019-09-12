@@ -10,7 +10,6 @@ import {
   addChatMessage
 } from "../../actions/chatActions";
 import setTripObject from "../../actions/setTripObject";
-import { arrayExpression } from "@babel/types";
 
 const SocketUrl = "http://127.0.0.1:3002";
 
