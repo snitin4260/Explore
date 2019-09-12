@@ -15,6 +15,7 @@ import Chat from './components/Chat/Chat'
 import JoinTrip from './components/trips/JoinTrip'
 import Profile from './components/Profile/Profile'
 import NoMatch from './components/NoMatch'
+import PrivateRoute from './components/PrivateRoute'
 
 function Root ({ store }) {
   return (
@@ -24,18 +25,16 @@ function Root ({ store }) {
           <Route path="/" exact component={MainPage} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
-          <Route path="/trip" exact component={Trips} />
-          <Route path="/trip/create" component={CreateTrip} />
-          <Route path="/trip/all" component={AllTrip} />
-          <Route
-            path="/trip/itinerary/edit/:id"
-            component={ItineraryEdit}
-          />
-          <Route path="/trip/itinerary/:id" component={ItineraryDisplay} />
-          <Route path="/trip/todo/:id" component={Todo} />
-          <Route path="/trip/chat/:id" component={Chat} />
-          <Route path="/join/:id" component={JoinTrip} />
-          <Route path="/profile" component={Profile} />
+          <PrivateRoute path="/trip" exact component={Trips} />
+          <PrivateRoute path="/trip/create" component={CreateTrip} />
+          <PrivateRoute path="/trip/all" component={AllTrip} />
+          <PrivateRoute path="/trip/itinerary/edit/:id" component={ItineraryEdit} />
+          <PrivateRoute path="/trip/itinerary/:id" component={ItineraryDisplay} />
+          <PrivateRoute path="/trip/todo/:id" component={Todo} />
+          {/* <Route path="/trip/todo/:id" component={Todo} /> */}
+          <PrivateRoute path="/trip/chat/:id" component={Chat} />
+          <PrivateRoute path="/join/:id" component={JoinTrip} />
+          <PrivateRoute path="/profile" component={Profile} />
           <Route component={NoMatch} />
         </Switch>
       </Router>

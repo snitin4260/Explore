@@ -9,11 +9,19 @@ import LogoHeader from "../logoHeader/LogoHeader";
 import InputLabelError from "../inputLabelError/InputLabelError";
 import styles from "./Login.module.css";
 import { API_URL } from "../../api";
-import { updateUsername } from "../../actions/userData";
+import { updateUsername, getUsername } from "../../actions/userData";
+import { getUsernameLs } from "../../util/index";
+
+const mapStateToProps = state => ({
+  user: state.user
+});
 
 const mapDispatchToProps = dispatch => ({
   updateUsername: name => {
     dispatch(updateUsername(name));
+  },
+  getUsername: _ => {
+    dispatch(getUsername());
   }
 });
 
@@ -30,13 +38,58 @@ const SuccessMessage = styled.div`
 
 class Login extends React.Component {
   state = {
-    redirect: false
+    redirect: false,
+    redirectToOrigin: false
   };
+  componentDidMount() {
+    this.hasUnmounted = false;
+    //
+    const { user, getUsername, location } = this.props;
+    if (user.userName) {
+      return;
+    }
+    if (getUsernameLs() && location.state && !this.hasUnmounted) {
+      this.setState({
+        redirectToOrigin: true
+      });
+      return;
+    }
+
+    if (getUsernameLs() && !location.state && !this.hasUnmounted) {
+      this.setState({
+        redirect: true
+      });
+      return;
+    }
+
+    getUsername();
+  }
+
+  componentWillUnmount() {
+    this.hasUnmounted = true;
+  }
+
+  componentDidUpdate(prevProps) {
+    // to make render mthod pure and to avoid setstates inside render
+    if (prevProps.user.userName !== this.props.user.userName) {
+      this.setState({
+        redirectToOrigin: true
+      });
+    }
+  }
+
   render() {
+    console.log(this.props);
+    if (this.state.redirectToOrigin) {
+      return <Redirect to={`${this.props.location.state.from.pathname}`} />;
+    }
     if (this.state.redirect) {
       return <Redirect to="/trip" />;
     }
+    const { user } = this.props;
     const { state } = this.props.location;
+    if (state && state.showNothingUntilCheck && user.isFetchingData)
+      return null;
     return (
       <>
         <LogoHeader />
@@ -70,9 +123,6 @@ class Login extends React.Component {
                         userName: responseObject.userName
                       })
                     );
-                    this.setState({
-                      redirect: true
-                    });
                   } else {
                     setErrors({
                       password: responseObject.msg
@@ -118,6 +168,6 @@ class Login extends React.Component {
   }
 }
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Login);

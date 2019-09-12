@@ -7,18 +7,20 @@ import {
 
 const initialState = {
   userName: null,
-  isFetchingData: false,
+  isFetchingData: true,
   fetchError: {
     status: null,
     error: null
-  }
+  },
+  isLoggedIn: false
 }
 
 export default (state = initialState, action) => {
   if (action.type === UPDATE_USERNAME) {
     return {
       ...state,
-      userName: action.payload.userName
+      userName: action.payload.userName,
+      isLoggedIn: true
     }
   }
   if (action.type === GET_USERNAME_START) {
@@ -31,8 +33,9 @@ export default (state = initialState, action) => {
     return {
       ...state,
       isFetchingData: false,
-      userName: action.payload.userName
-    }
+      userName: action.payload.userName,
+      isLoggedIn: true
+    };
   }
   if (action.type === GET_USERNAME_FAIL) {
     return {
@@ -43,7 +46,7 @@ export default (state = initialState, action) => {
         status: action.payload.status
       }
 
-    }
+    };
   }
 
   return state
