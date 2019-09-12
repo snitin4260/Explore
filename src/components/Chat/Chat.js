@@ -10,6 +10,7 @@ import {
   addChatMessage
 } from "../../actions/chatActions";
 import setTripObject from "../../actions/setTripObject";
+import { arrayExpression } from "@babel/types";
 
 const SocketUrl = "http://127.0.0.1:3002";
 
@@ -33,7 +34,49 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
+/*********************** styling ***********************/
 
+const ChatContainer = styled.section`
+  width: 100%;
+  max-width: 90rem;
+  height: calc(100vh - 60px);
+  background: lightskyblue;
+  position: relative;
+  display: grid;
+  grid-template-rows: 60px 1fr 60px;
+`;
+
+const TripNameContainer = styled.div`
+  background-color: floralwhite;
+`;
+
+const MesasageInputContainer = styled.div`
+  background-color: floralwhite;
+`;
+const MessageContainer = styled.div`
+  overflow: auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+`;
+const MessageItemContainer = styled.div`
+  
+
+`;
+
+const MessageItemInnerContainer = styled.div`
+  background: cornsilk;
+  max-width: 500px;
+  padding: 0.6rem;
+  margin-top: 1rem;
+  border-radius: 3px;
+`;
+
+const NameContainer = styled.div``;
+
+const TextContainer = styled.div``;
+
+const TimeContainer = styled.div``;
 
 class Chat extends React.Component {
   componentDidMount() {
@@ -79,14 +122,30 @@ class Chat extends React.Component {
     }
   }
 
+  output() {
+    let arr = [];
+    for (let i = 0; i < 100; i++) {
+      arr.push(
+        <MessageItemContainer key={i}>
+          <TextContainer>Hola how are you</TextContainer>
+        </MessageItemContainer>
+      );
+    }
+    return arr;
+  }
+
   render() {
     const { id } = this.props.match.params;
     const { chat } = this.props;
     const tripChat = chat[id];
     if (!tripChat) return null;
     return (
-      <UserDashboard selected="chat">
-        <div>Loading</div>
+      <UserDashboard bgPad="0" selected="chat">
+        <ChatContainer>
+          <TripNameContainer></TripNameContainer>
+          <MessageContainer>{this.output()}</MessageContainer>
+          <MesasageInputContainer></MesasageInputContainer>
+        </ChatContainer>
       </UserDashboard>
     );
   }

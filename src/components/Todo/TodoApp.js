@@ -10,7 +10,6 @@ import setTripObject from "../../actions/setTripObject";
 import editTodoItem from "../../actions/editTodoItem";
 import dragAndDropHandle from "../../actions/dragAndDropActivity";
 import {dragAndDropDataSend} from "../../actions/dragAndDropActivity";
-import {API_URL} from '../../api'
 import {
   showSlider,
   hideSlider,

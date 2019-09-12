@@ -9,6 +9,7 @@ import styles from "./ItineraryDisplay.module.css";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
+import Alert from "../Alert/Alert";
 
 const mapStateToProps = state => {
   return {
@@ -133,17 +134,25 @@ const ItineraryButton = styled.button`
   font-family: "Roboto", sans-serif;
 `;
 
+const NoActivityDisplay = styled.div`
+ font-size: 2rem;
+ font-family: 'Roboto',sans-serif;
+ color: black;
+ margin-top: 2rem;
+ text-align: center;
+`
+
 class ItineraryDisplay extends React.Component {
   state = {
     redirectToEditItinerary: false
   };
   componentDidMount() {
     const { id } = this.props.match.params;
-    if(!this.props.itinerary[id]) {
-    this.props.setTripObject(id);
-    this.props.setItineraryObject(id);
-    const { getItineraryData } = this.props;
-    getItineraryData(id);
+    if (!this.props.itinerary[id]) {
+      this.props.setTripObject(id);
+      this.props.setItineraryObject(id);
+      const { getItineraryData } = this.props;
+      getItineraryData(id);
     }
   }
 
@@ -176,40 +185,49 @@ class ItineraryDisplay extends React.Component {
     const { location, activity, date } = tripObj[0];
     return (
       <>
-        <DatePlaceContainer>
-          <DateSpan>{date}</DateSpan>
-          &#183;
-          <PlaceSpan>{location}</PlaceSpan>
-        </DatePlaceContainer>
-        <ActivityContainerUl>
-          {activity.map(activityObj => {
-            return (
-              <ActivityItemLi key={activityObj._id}>
-                {activityObj.task}
-              </ActivityItemLi>
-            );
-          })}
-        </ActivityContainerUl>
+        {activity.length == 0 ? (
+          <NoActivityDisplay>
+            No activites planned for the day yet
+          </NoActivityDisplay>
+        ) : (
+          <>
+            <DatePlaceContainer>
+              <DateSpan>{date}</DateSpan>
+              &#183;
+              <PlaceSpan>{location}</PlaceSpan>
+            </DatePlaceContainer>
+            <ActivityContainerUl>
+              {activity.map(activityObj => {
+                return (
+                  <ActivityItemLi key={activityObj._id}>
+                    {activityObj.task}
+                  </ActivityItemLi>
+                );
+              })}
+            </ActivityContainerUl>
+          </>
+        )}
       </>
     );
   }
 
   render() {
-     const { id } = this.props.match.params;
+    const { id } = this.props.match.params;
     if (this.state.redirectToEditItinerary) {
       return <Redirect to={`/trip/itinerary/edit/${id}`} />;
     }
-   
+
     const { itinerary, changeItinerarySelectOption } = this.props;
     const tripItinerary = itinerary[id];
     if (!tripItinerary) return null;
-    const { isLoading, error, selectedOption } = tripItinerary;
+    const { isLoading, error, selectedOption, errorMessage } = tripItinerary;
+    console.log(error);
     return (
       <>
         <UserDashBoard selected="itinerary" bg="rgba(103, 146, 103, 0.2)">
           <Main>
             {error ? (
-              <div>Failed loading page </div>
+              <Alert type="error" message={errorMessage} />
             ) : (
               <div>
                 {isLoading ? (
@@ -223,11 +241,15 @@ class ItineraryDisplay extends React.Component {
                   <>
                     <ItineraryHeader>Itinerary</ItineraryHeader>
                     <ButtonContainer>
-                      <ItineraryButton onClick={() => {
-                        this.setState({
-                          redirectToEditItinerary: true
-                        })
-                      }}>Edit</ItineraryButton>
+                      <ItineraryButton
+                        onClick={() => {
+                          this.setState({
+                            redirectToEditItinerary: true
+                          });
+                        }}
+                      >
+                        Edit
+                      </ItineraryButton>
                     </ButtonContainer>
                     <SelectContainer>
                       <Select

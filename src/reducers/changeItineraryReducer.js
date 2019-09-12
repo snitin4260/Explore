@@ -13,7 +13,8 @@ export default (state = {}, action) => {
     case SET_ITINERARY_TRIP_OBJECT:
       return produce(state, draft => {
         draft[action.payload.tripId] = {
-          error: null,
+          error: false,
+          errorMessage:'',
           isLoading: true,
           data: [],
           selectedOption: {
@@ -55,7 +56,8 @@ export default (state = {}, action) => {
       return produce(state, draft => {
         const trip = draft[action.payload.tripId]
         trip.isLoading = false
-        trip.error = action.payload.error
+        trip.error = true
+        trip.errorMessage = action.payload.error
       })
     }
 

@@ -139,7 +139,7 @@ class Header extends React.Component {
           )}
           {(userName || userFromLs) && (
             <IconContainer>
-              <Name>{userName || userFromLs.userName}</Name>
+              <Name>{(userName || userFromLs.userName).slice(0,10)}...</Name>
               <UserSvg
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"
