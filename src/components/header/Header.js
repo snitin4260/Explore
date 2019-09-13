@@ -125,9 +125,7 @@ class Header extends React.Component {
   handleLogOut = async _ => {
     //make api request
     try {
-      const response = await fetch(`${API_URL}/logout`, {
-        method: "POST"
-      });
+      const response = await fetch(`${API_URL}/logout`);
       const responseObject = await response.json();
       if (response.status !== 200) {
         this.setState({
@@ -162,7 +160,7 @@ class Header extends React.Component {
               Explore
             </Link>
           </LogoContainer>
-          {error && status === 401 && (
+          { status === 401 && (
             <LoginSignupContainer>
               <Link className={styles["header__item"]} to="/login">
                 Log in
