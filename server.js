@@ -62,14 +62,14 @@ app.post('/api/login',
   passport.authenticate('local'),
   (req, res) => {
     // console.log(req)
-    if (req.user) {
+    // if (req.user) {
       const userName = req.user.name
       const _id = req.user.id
       req.session['userId'] = _id
       res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
       res.status(200).send({ userName, _id })
-    }
-    res.status(401).json({ msg: 'invalid password' })
+    // }
+    // res.status(401).json({ msg: 'invalid password' })
   }
 )
 
@@ -92,14 +92,14 @@ app.get('/api/trip/count', (req, res) => {
 // })
 
 const isLoggedIn = async (req, res, next) => {
-  // if (req.session.passport !== undefined) {
-  //   return next()
-  // }
-  // res.status(401).send('User Not Logged In')
-  if (req.cookies.userId !== undefined) {
-    const currentUser = User.findById(req.cookies.userId)
-    if (currentUser.length !== 0) { return res.status(200).json({ userName: currentUser.name }) }
+  if (req.session.passport !== undefined) {
+    return next()
   }
+  // res.status(401).send('User Not Logged In')
+  // if (req.cookies.userId !== undefined) {
+  //   const currentUser = User.findById(req.cookies.userId)
+  //   if (currentUser.length !== 0) { return res.status(200).json({ userName: currentUser.name }) }
+  // }
   res.status(401).json({ msg: 'user not found' })
 }
 

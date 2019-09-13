@@ -124,11 +124,6 @@ class Login extends React.Component {
                       })
                     );
                   }
-                  if(response.status === 401) {
-                    setErrors({
-                      password: 'Wrong email or password'
-                    })
-                  }
                     else {
                     setErrors({
                       password: responseObject.msg
