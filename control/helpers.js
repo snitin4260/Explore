@@ -185,7 +185,7 @@ const createTodo = async (req, res) => {
     const userId = req.cookies.userId
     const Todo = {
       text: req.body.text,
-      _id: uuidv1(),
+      id: uuidv1(),
       user: userId
     }
     const newTodo = await todos.create(Todo)
@@ -193,7 +193,7 @@ const createTodo = async (req, res) => {
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
     const column = await order.find({ user: userId })
     column[0].todo.taskIds.push(newTodo.id)
-    res.status(201).send({ tasks: todoData })
+    res.status(201).send({ ...todoData })
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
