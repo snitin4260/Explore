@@ -73,7 +73,7 @@ class Login extends React.Component {
     // to make render mthod pure and to avoid setstates inside render
     if (prevProps.user.userName !== this.props.user.userName) {
       this.setState({
-        redirectToOrigin: true
+        redirect: true
       });
     }
   }

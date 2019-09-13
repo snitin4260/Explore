@@ -15,7 +15,7 @@ const Container = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   max-width: 440px;
   width: 100%;
   z-index: 100;
@@ -117,7 +117,7 @@ class CreateTrip extends React.Component {
   changeTripName = e => {
     const text = e.target.value;
     console.log(text);
-    if (text.length <= 30 && text.trim() !== "") {
+    if (text.length <= 30) {
       this.setState({
         tripName: text
       });
@@ -160,48 +160,66 @@ class CreateTrip extends React.Component {
 
   handleSubmit = async e => {
     e.preventDefault();
-    const { tripEndDate, tripStartDate,tripName } = this.state;
+    const { tripEndDate, tripStartDate, tripName } = this.state;
+
+    if (tripEndDate < tripStartDate && tripName.trim() == "") {
+      this.setState({
+        showError: true,
+        error:
+          "Trip start date must be smaller than trip end date and trip name should not be empty"
+      });
+      return;
+    }
+
     if (tripEndDate < tripStartDate) {
       this.setState({
         showError: true,
         error: "Trip start date must be smaller than trip end date"
       });
-    } else {
+      return;
+    }
+    if (tripName.trim() === "") {
       this.setState({
-        isSubmitting: true
+        showError: true,
+        error: "Trip name should not be empty"
       });
-      try {
-        let bodyobj = {
-          tripName,
-          startDate: tripStartDate,
-          endDate: tripEndDate
-        }
-        const response = await fetch(`${API_URL}/trip/new`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(bodyobj)
+      return;
+    }
+
+    this.setState({
+      isSubmitting: true
+    });
+    try {
+      let bodyobj = {
+        tripName,
+        startDate: tripStartDate,
+        endDate: tripEndDate
+      };
+      const response = await fetch(`${API_URL}/trip/new`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyobj)
+      });
+      if (response.status === 201) {
+        this.setState({
+          redirect: true
         });
-        if (response.status === 201) {
-          this.setState({
-            redirect: true
-          });
-        } else {
-          const reposnseObject = await response.json();
-          this.setState({
-            showError: true,
-            isSubmitting: false,
-            error: reposnseObject.msg
-          });
-        }
-      } catch (e) {
+      } else {
+        const reposnseObject = await response.json();
         this.setState({
           showError: true,
           isSubmitting: false,
-          error: "Server is down. Please try again later"
+          error: reposnseObject.msg
         });
       }
+    } catch (e) {
+      this.setState({
+        showError: true,
+        isSubmitting: false,
+        error: "Server is down. Please try again later"
+      });
     }
   };
 
