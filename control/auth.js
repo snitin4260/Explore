@@ -37,7 +37,7 @@ async (email, password, done) => {
       if (isMatch) {
         return done(null, user)
       } else {
-        return done(null, { status: 401, msg: 'Invalid password' })
+        return done(null, false, { status: 401, msg: 'Invalid password' })
       }
     })
   })
