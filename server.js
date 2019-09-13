@@ -50,13 +50,6 @@ app.use(function (req, res, next) {
 passport.serializeUser(function (user, done) {
   done(null, user.id)
 })
-// passport.serializeUser(function (user, done) {
-//   done(null, {
-//     _id: user['id'],
-//     userName: user['name'],
-//     email: user['email']
-//   })
-// })
 
 passport.deserializeUser(function (id, done) {
   User.getUserById(id, function (err, user) {
@@ -69,11 +62,14 @@ app.post('/api/login',
   passport.authenticate('local'),
   (req, res) => {
     // console.log(req)
-    const userName = req.user.name
-    const _id = req.user.id
-    req.session['userId'] = _id
-    res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
-    res.status(200).send({ userName, _id })
+    if (req.user) {
+      const userName = req.user.name
+      const _id = req.user.id
+      req.session['userId'] = _id
+      res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
+      res.status(200).send({ userName, _id })
+    }
+    res.status(401).json({ msg: 'invalid password' })
   }
 )
 
