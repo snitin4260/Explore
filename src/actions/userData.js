@@ -2,7 +2,8 @@ import {
   UPDATE_USERNAME,
   GET_USERNAME_START,
   GET_USERNAME_SUCCESS,
-  GET_USERNAME_FAIL
+  GET_USERNAME_FAIL,
+  RESET_STATUS
 } from './actionConstants'
 import { API_URL } from '../api/index'
 
@@ -45,6 +46,8 @@ export const getUsername = _ => async dispatch => {
     })
   }
 }
+
+
 
 export const updateUsername = userName => ({
   type: UPDATE_USERNAME,

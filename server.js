@@ -80,7 +80,6 @@ app.post('/api/login',
 // Endpoint to logout
 app.get('/logout', (req, res) => {
   res.clearCookie('user_sid', 'userId')
-  // res.clearCookie('userId')
   req.logout()
   res.status(200).send({ msg: 'user logged Out' })
 })

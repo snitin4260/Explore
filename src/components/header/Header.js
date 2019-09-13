@@ -4,11 +4,9 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 
 import styles from "./Header.module.css";
-import { getUsernameLs,clearUsername } from "../../util/index";
+import { getUsernameLs, clearUsername } from "../../util/index";
 import { getUsername } from "../../actions/userData";
-import {API_URL} from '../../api/index'
-
-
+import { API_URL } from "../../api/index";
 
 const PageHeader = styled.header`
   background-color: black;
@@ -129,14 +127,19 @@ class Header extends React.Component {
         method: "GET"
       });
       const responseObject = await response.json();
+      if (response.status === 200) {
+        // delete from local storage
+        clearUsername();
+        // refresh and redirect to login
+        window.location.reload();
+      }
       if (response.status !== 200) {
         this.setState({
           logOutError: true,
           logOutErrorMessage: responseObject.msg
         });
-             return;
+        return;
       }
- 
     } catch (e) {
       this.setState({
         logOutError: true,
@@ -144,11 +147,6 @@ class Header extends React.Component {
       });
       return;
     }
-
-    // delete from local storage
-    clearUsername();
-    // refresh and redirect to login
-    window.location.reload();
   };
   render() {
     const userFromLs = getUsernameLs();
@@ -162,7 +160,8 @@ class Header extends React.Component {
               Explore
             </Link>
           </LogoContainer>
-          {error && status === 401 && (
+
+          {status === 401 && (
             <LoginSignupContainer>
               <Link className={styles["header__item"]} to="/login">
                 Log in
