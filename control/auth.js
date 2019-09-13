@@ -30,14 +30,14 @@ async (email, password, done) => {
   User.getUserByEmail(email, (err, user) => {
     if (err) throw err
     if (!user) {
-      return done(null, false, { message: 'Unknown User' })
+      return done(null, false, { msg: 'Unknown User' })
     }
     User.comparePassword(password, user.password, (err, isMatch) => {
       if (err) throw err
       if (isMatch) {
         return done(null, user)
       } else {
-        return done(null, false, { status: 401, message: 'Invalid password' })
+        return done(null, false, { status: 401, msg: 'Invalid password' })
       }
     })
   })

@@ -76,10 +76,14 @@ const deleteTrip = async (req, res) => {
 
 const particularItinearayData = async (req, res) => {
   try {
+    // const _id = req.params.id
+    // const currentUser = req.cookies.userId
+    // const trip = await trips.findOne({ id: _id })
+    // console.log(trips.admin)
+    // console.log(currentUser === trip.admin)
     const id = req.params.id
     const itinerary1 = await itinerarys.find({ tripId: id })
     if (itinerary1.length === 0) {
-      // console.log('im in')
       const _id = req.params.id
       const particularTrip = await trips.findById(_id)
       const start = moment(particularTrip.startDate)
@@ -96,7 +100,7 @@ const particularItinearayData = async (req, res) => {
         itinerary['activity'] = item.activity
         return itinerary
       })
-      res.status(200).json({ itinerary })
+      res.status(200).json({ itinerary , isAdmin: true })
     } else {
       const result = await itinerarys.find({ tripId: id })
       const itinerary = await result.map(item => {
@@ -173,7 +177,15 @@ const getAllTodos = async (req, res) => {
       return order
     })
     const columnOrderArray = await column.map(item => item.columnOrder)
-    res.status(200).json({ tasks: todo, columns: { ...columnOrders[0] }, columnOrder: columnOrderArray[0] })
+
+    const todoFormat = await todo.map(item => {
+      const todos = {}
+      todos['_id'] = item._id
+      todos['text'] = item.text
+      todos['createdAt'] = item.createdAt
+      return todos
+    })
+    res.status(200).json({ tasks: todoFormat, columns: { ...columnOrders[0] }, columnOrder: columnOrderArray[0] })
   } catch (error) {
     console.log(error)
     res.status(404).json(error)
@@ -189,10 +201,10 @@ const createTodo = async (req, res) => {
       user: userId
     }
     const newTodo = await todos.create(Todo)
-    console.log(newTodo)
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
     const column = await order.find({ user: userId })
     column[0].todo.taskIds.push(newTodo.id)
+    console.log(column[0].todo.taskIds)
     res.status(201).send({ ...todoData })
   } catch (error) {
     console.log(error)
@@ -200,7 +212,7 @@ const createTodo = async (req, res) => {
   }
 }
 
-async function createOrder  (userId) {
+async function createOrder (userId) {
   const columnsOrder = {
     todo: {
       taskIds: []

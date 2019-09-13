@@ -78,10 +78,11 @@ app.post('/api/login',
 )
 
 // Endpoint to logout
-app.get('/api/logout', (req, res) => {
+app.get('/logout', (req, res) => {
+  res.clearCookie('user_sid', 'userId')
+  // res.clearCookie('userId')
   req.logout()
-  res.clearCookie('user_sid')
-  res.status(200).send('user logged Out')
+  res.status(200).send({ msg: 'user logged Out' })
 })
 
 app.get('/api/trip/count', (req, res) => {
@@ -96,10 +97,15 @@ app.get('/api/trip/count', (req, res) => {
 // })
 
 const isLoggedIn = async (req, res, next) => {
-  if (req.session.passport !== undefined) {
-    return next()
+  // if (req.session.passport !== undefined) {
+  //   return next()
+  // }
+  // res.status(401).send('User Not Logged In')
+  if (req.cookies.userId !== undefined) {
+    const currentUser = User.findById(req.cookies.userId)
+    if (currentUser.length !== 0) { return res.status(200).json({ userName: currentUser.name }) }
   }
-  res.status(401).send('User Not Logged In')
+  res.status(401).json({ msg: 'user not found' })
 }
 
 app.use('/api', tripRoutes)

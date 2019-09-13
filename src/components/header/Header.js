@@ -126,7 +126,7 @@ class Header extends React.Component {
     //make api request
     try {
       const response = await fetch(`${API_URL}/logout`, {
-        method: "POST"
+        method: "GET"
       });
       const responseObject = await response.json();
       if (response.status !== 200) {
