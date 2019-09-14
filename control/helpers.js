@@ -40,7 +40,6 @@ const tripsById = async (req, res) => {
   }
 }
 const allTrip = async (req, res) => {
-  console.log(req.user)
   try {
     const allTripsData = await trips.find()
     const allTripData = allTripsData.map(obj => {
@@ -78,7 +77,7 @@ const particularItinearayData = async (req, res) => {
   try {
     // const _id = req.params.id
     // const currentUser = req.cookies.userId
-    // const trip = await trips.findOne({ id: _id })
+    // const trip = await trips.find(_id)
     // console.log(trips.admin)
     // console.log(currentUser === trip.admin)
     const id = req.params.id
@@ -100,7 +99,7 @@ const particularItinearayData = async (req, res) => {
         itinerary['activity'] = item.activity
         return itinerary
       })
-      res.status(200).json({ itinerary , isAdmin: true })
+      res.status(200).json({ itinerary, isAdmin: true })
     } else {
       const result = await itinerarys.find({ tripId: id })
       const itinerary = await result.map(item => {
@@ -112,7 +111,7 @@ const particularItinearayData = async (req, res) => {
         itinerary['activity'] = item.activity
         return itinerary
       })
-      res.status(200).json({ itinerary })
+      res.status(200).json({ itinerary, isAdmin: true })
     }
   } catch (error) {
     res.status(400).json(error)
@@ -137,13 +136,13 @@ const itineraryLoop = (start, difference, id) => {
 const itineraryData = async (req, res) => {
   try {
     const dayId = req.body._id
-    const iLocation = req.body.location
-    const iActivity = req.body.activity
+    const itinerarayLocation = req.body.location
+    const itinerarayActivity = req.body.activity
     const id = req.params.id
     const itinerary = await itinerarys.find({ tripId: id })
     for (const x of itinerary) {
       if (x.id === dayId) {
-        const result = await itinerarys.findOneAndUpdate({ _id: x.id }, { activity: iActivity, location: iLocation })
+        const result = await itinerarys.findOneAndUpdate({ _id: x.id }, { activity: itinerarayActivity, location: itinerarayLocation })
       }
     }
     res.status(200).json({ msg: 'data updated' })
@@ -203,11 +202,14 @@ const createTodo = async (req, res) => {
     const newTodo = await todos.create(Todo)
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
     const column = await order.find({ user: userId })
-    column[0].todo.taskIds.push(newTodo.id)
-    console.log(column[0].todo.taskIds)
+    const newTask = column[0].todo.taskIds
+    newTask.push(newTodo.id)
+    const result = await order.findOneAndUpdate({ _id: userId }, { todo: { taskIds: newTask } })
+    // console.log(column[0].todo.taskIds)
+    // order.update({ _id: userId }, { todo: { taskIds: newTask } })
     res.status(201).send({ ...todoData })
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     res.status(400).json(error)
   }
 }
@@ -248,10 +250,10 @@ const columnOrderData = async (req, res) => {
 
 const updateTodoTask = async (req, res) => {
   try {
-    // const userId = req.body.userId
-    // const user = await todo.findById(userId)
-    const updatedTodo = await User.todo.findOneAndUpdate({ id: req.body.taskId },
-      { text: req.body.text }, { new: true })
+    const _id = req.params.id
+    const userId = req.cookies.userId
+    // const todoData = await todos.findById({ user: _id })
+    const updatedTodo = await todos.findOneAndUpdate({ user: _id }, { text: req.body.text })
     res.status(200).json({ msg: 'Data Updated' })
   } catch (error) {
     res.status(404).json(error)
