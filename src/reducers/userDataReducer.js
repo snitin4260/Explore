@@ -2,8 +2,9 @@ import {
   UPDATE_USERNAME,
   GET_USERNAME_START,
   GET_USERNAME_SUCCESS,
-  GET_USERNAME_FAIL
-} from "../actions/actionConstants";
+  GET_USERNAME_FAIL,
+  RESET_STATUS
+} from '../actions/actionConstants'
 
 const initialState = {
   userName: null,
@@ -13,7 +14,7 @@ const initialState = {
     error: null
   },
   isLoggedIn: false
-};
+}
 
 export default (state = initialState, action) => {
   if (action.type === UPDATE_USERNAME) {
@@ -25,13 +26,13 @@ export default (state = initialState, action) => {
       },
       userName: action.payload.userName,
       isLoggedIn: true
-    };
+    }
   }
   if (action.type === GET_USERNAME_START) {
     return {
       ...state,
       isFetchingData: true
-    };
+    }
   }
   if (action.type === GET_USERNAME_SUCCESS) {
     return {
@@ -39,7 +40,7 @@ export default (state = initialState, action) => {
       isFetchingData: false,
       userName: action.payload.userName,
       isLoggedIn: true
-    };
+    }
   }
   if (action.type === GET_USERNAME_FAIL) {
     return {
@@ -49,8 +50,18 @@ export default (state = initialState, action) => {
         error: action.payload.msg,
         status: action.payload.status
       }
-    };
+    }
   }
 
-  return state;
-};
+  if (action.type === RESET_STATUS) {
+    return {
+      ...state,
+      fetchError: {
+        error: null,
+        status: null
+      }
+    }
+  }
+
+  return state
+}

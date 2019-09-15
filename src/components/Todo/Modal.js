@@ -40,7 +40,7 @@ const TextArea = styled.textarea`
   border: 2px;
   resize: none;
 `;
-const rotate = keyframes`
+export const rotate = keyframes`
  0%    { transform: rotate(0deg); }
   100%  { transform: rotate(360deg); }
 `;

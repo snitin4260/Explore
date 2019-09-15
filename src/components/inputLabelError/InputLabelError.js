@@ -3,7 +3,8 @@ import { Field, ErrorMessage } from 'formik'
 import styles from './InputLabelError.module.css'
 
 function InputLabelError (props) {
-  const { inputName, inputLabel, inputType } = props
+  const { inputName, inputLabel, inputType,disabled } = props
+  
   return (
     <>
       <div className={styles['form-label-field']}>
@@ -16,6 +17,7 @@ function InputLabelError (props) {
           type={inputType}
           name={inputName}
           autoComplete='true'
+          disabled={disabled}
         />
         <ErrorMessage
           className={styles['error-message']}

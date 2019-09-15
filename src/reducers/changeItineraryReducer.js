@@ -14,7 +14,7 @@ export default (state = {}, action) => {
       return produce(state, draft => {
         draft[action.payload.tripId] = {
           error: false,
-          errorMessage:'',
+          errorMessage: '',
           iAdmin: false,
           isLoading: true,
           data: [],
@@ -32,6 +32,7 @@ export default (state = {}, action) => {
           const itineraryDayData = trip.data[i]
           if (itineraryDayData._id === action.payload._id) {
             itineraryDayData.activity = action.payload.activity
+            itineraryDayData.location = action.payload.location
           }
         }
       })

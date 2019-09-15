@@ -3,11 +3,8 @@ const todos = require('../models/todoSchema')
 const order = require('../models/orderSchema')
 const itinerarys = require('../models/itineararySchema')
 const User = require('../models/user')
-// const passport = require('passport')
 const moment = require('moment')
 const uuidv1 = require('uuid/v1')
-// const mongoose = require('mongoose')
-
 const postNewTrip = async (req, res) => {
   try {
     const Trip = {
@@ -239,7 +236,6 @@ const columnOrderData = async (req, res) => {
     const toColumn = req.body.destinationColumnId
     const fromIndex = req.body.sourceIndex
     const toIndex = req.body.destinationIndex
-
     const todoOrder = await order.find()
     const removedIndex = await todoOrder[0].fromColumn.taskIds.splice(fromIndex, 1)
     const newOrder = await todoOrder[0].toColumn.taskIds.splice(toIndex, 0, removedIndex)

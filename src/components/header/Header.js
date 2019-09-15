@@ -127,11 +127,13 @@ class Header extends React.Component {
         method: "GET"
       });
       const responseObject = await response.json();
+      console.log(response.status)
       if (response.status === 200) {
+        console.log("here")
         // delete from local storage
         clearUsername();
         // refresh and redirect to login
-        window.location.reload();
+        window.location.reload()
       }
       if (response.status !== 200) {
         this.setState({

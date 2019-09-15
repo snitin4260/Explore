@@ -148,13 +148,14 @@ class ItineraryDisplay extends React.Component {
   };
   componentDidMount() {
     const { id } = this.props.match.params;
-    if (!this.props.itinerary[id]) {
+    // if (!this.props.itinerary[id]) {
       this.props.setTripObject(id);
       this.props.setItineraryObject(id);
       const { getItineraryData } = this.props;
       getItineraryData(id);
-    }
+    // }
   }
+
 
   getSelectOptions() {
     const { id } = this.props.match.params;

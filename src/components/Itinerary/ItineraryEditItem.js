@@ -287,7 +287,8 @@ class ItineraryEdititem extends React.Component {
         this.props.changeItinerary({
           tripId,
           _id: this.props.itinerary._id,
-          activity: this.state.activity
+          activity: this.state.activity,
+          location: this.state.location
         });
       } else {
         this.setState({

@@ -15,8 +15,8 @@ export default tripId => async dispatch => {
   })
   try {
     const response = await fetch(`${API_URL}/todo/${tripId}`)
+    const todoData = await response.json()
     if (response.status === 200) {
-      const todoData = await response.json()
       dispatch({
         type: GET_TODO_DATA_SUCCESS,
         payload: {
@@ -28,13 +28,21 @@ export default tripId => async dispatch => {
           }
         }
       })
+    } else {
+      dispatch({
+        type: GET_TODO_DATA_FAIL,
+        payload: {
+          tripId,
+          error: todoData.msg
+        }
+      })
     }
   } catch (e) {
     dispatch({
       type: GET_TODO_DATA_FAIL,
       payload: {
         tripId,
-        error: e
+        error: 'Server is down. Try after some time'
       }
     })
   }
