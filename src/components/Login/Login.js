@@ -70,11 +70,16 @@ class Login extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // to make render mthod pure and to avoid setstates inside render
+    // to make render method pure and to avoid setstates inside render
+    const { state } = this.props.location;
     if (prevProps.user.userName !== this.props.user.userName) {
-      this.setState({
-        redirect: true
-      });
+      state
+        ? this.setState({
+            redirectToOrigin: true
+          })
+        : this.setState({
+            redirect: true
+          });
     }
   }
 
@@ -88,6 +93,9 @@ class Login extends React.Component {
     }
     const { user } = this.props;
     const { state } = this.props.location;
+    //user data is not there in localSt and redux store
+    // making request to server to know whether user is logged in
+    //return null until then
     if (state && state.showNothingUntilCheck && user.isFetchingData)
       return null;
     return (
@@ -123,8 +131,7 @@ class Login extends React.Component {
                         userName: responseObject.userName
                       })
                     );
-                  }
-                    else {
+                  } else {
                     setErrors({
                       password: responseObject.msg
                     });

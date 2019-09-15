@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
 import queryString from "query-string";
 import styled from "styled-components";
 
@@ -192,18 +191,6 @@ class JoinTrip extends React.Component {
       disabled: isSubmitting
     };
     const { id } = this.props.match.params;
-    if (this.state.redirect) {
-      const msg = hasAccount
-        ? `You have been added to ${adminName}'s group. Please login`
-        : `Account created. You have been added ${adminName}'s group `;
-      return (
-        <Redirect
-          to={{
-            pathname: "/login"
-          }}
-        />
-      );
-    }
 
     return (
       <>
