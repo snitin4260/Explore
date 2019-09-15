@@ -41,6 +41,7 @@ class Login extends React.Component {
     redirect: false,
     redirectToOrigin: false
   };
+
   componentDidMount() {
     this.hasUnmounted = false;
     //
@@ -48,20 +49,16 @@ class Login extends React.Component {
     if (user.userName) {
       return;
     }
-    if (getUsernameLs() && location.state && !this.hasUnmounted) {
+    if (getUsernameLs()  && !this.hasUnmounted) {
+       location.state?
       this.setState({
         redirectToOrigin: true
-      });
-      return;
-    }
-
-    if (getUsernameLs() && !location.state && !this.hasUnmounted) {
+      }):
       this.setState({
         redirect: true
       });
-      return;
-    }
 
+    }
     getUsername();
   }
 
@@ -121,6 +118,7 @@ class Login extends React.Component {
                     },
                     body: JSON.stringify(values)
                   });
+                  setSubmitting(false)
                   const responseObject = await response.json();
                   if (response.status === 200) {
                     this.props.updateUsername(responseObject.userName);

@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import {connect} from "react-redux"
-import Login from "../components/Login/Login";
 import { getUsernameLs } from "../util/index";
 
 
