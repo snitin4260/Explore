@@ -32,6 +32,8 @@ export default (state = {}, action) => {
           const itineraryDayData = trip.data[i]
           if (itineraryDayData._id === action.payload._id) {
             itineraryDayData.activity = action.payload.activity
+            itineraryDayData.location = action.payload.location
+          
           }
         }
       })

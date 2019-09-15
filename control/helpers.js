@@ -100,7 +100,7 @@ const particularItinearayData = async (req, res) => {
         itinerary['activity'] = item.activity
         return itinerary
       })
-      res.status(200).json({ itinerary , isAdmin: true })
+      res.status(200).json({ itinerary, isAdmin: true })
     } else {
       const result = await itinerarys.find({ tripId: id })
       const itinerary = await result.map(item => {
@@ -112,7 +112,7 @@ const particularItinearayData = async (req, res) => {
         itinerary['activity'] = item.activity
         return itinerary
       })
-      res.status(200).json({ itinerary })
+      res.status(200).json({ itinerary, isAdmin: true })
     }
   } catch (error) {
     res.status(400).json(error)
@@ -237,7 +237,6 @@ const columnOrderData = async (req, res) => {
     const toColumn = req.body.destinationColumnId
     const fromIndex = req.body.sourceIndex
     const toIndex = req.body.destinationIndex
-
     const todoOrder = await order.find()
     const removedIndex = await todoOrder[0].fromColumn.taskIds.splice(fromIndex, 1)
     const newOrder = await todoOrder[0].toColumn.taskIds.splice(toIndex, 0, removedIndex)

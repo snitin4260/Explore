@@ -48,6 +48,7 @@ class Register extends React.Component {
                   },
                   body: JSON.stringify(values)
                 });
+                setSubmitting(false)
                 if (response.status === 201) {
                   this.setState({
                     redirect: true

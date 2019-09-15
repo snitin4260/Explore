@@ -20,8 +20,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  changeItinerary: ({ tripId, _id, activity }) => {
-    dispatch(changeItinerary({ tripId, _id, activity }));
+  changeItinerary: ({ tripId, _id, activity,location }) => {
+    dispatch(changeItinerary({ tripId, _id, activity,location }));
   },
   setTripObject: tripId => {
     dispatch(setTripObject(tripId));

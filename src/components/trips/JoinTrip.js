@@ -1,16 +1,24 @@
 import React from "react";
-import { Formik, Form } from "formik";
 import { Redirect } from "react-router-dom";
 import queryString from "query-string";
-import * as Yup from "yup";
 import styled from "styled-components";
 
 import LogoHeader from "../logoHeader/LogoHeader";
-import styles from "../Login/Login.module.css";
-import InputLabelError from "../inputLabelError/InputLabelError";
 import { API_URL } from "../../api";
 import BackgroundContainer from "../BackgroundContainer/BackgroundContainer";
 import Alert from "../Alert/Alert";
+import { rotate } from "../Todo/Modal";
+import NoAccountJoinTrip from "./NoAccountJoinTrip";
+import UserAddSuccess from "./UserAddSuccess";
+
+export const Spinner = styled.div`
+  height: 20px;
+  width: 20px;
+  animation: ${rotate} 0.8s infinite linear;
+  border: 2px solid white;
+  border-right-color: transparent;
+  border-radius: 50%;
+`;
 
 const LoadingDiv = styled.div`
   height: 40px;
@@ -36,7 +44,7 @@ const ButtonContainer = styled.div`
   margin-top: 10rem;
 `;
 
-const JoinButton = styled.button`
+export const JoinButton = styled.button`
   text-transform: uppercase;
   color: white;
   background-color: var(--main-bg-color);
@@ -44,16 +52,19 @@ const JoinButton = styled.button`
   width: 100%;
   font-weight: 600;
   padding: 1.2rem 1rem;
-cursor: ${props => {
-  return props.isSubmitting? 'not-allowed': 'pointer'
-}};
+  cursor: ${props => {
+    return props.isSubmitting ? "not-allowed" : "pointer";
+  }};
   font-size: 1.5rem;
   font-family: "Roboto", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 class JoinTrip extends React.Component {
   state = {
-    redirect: false,
+    showSuccessPage: false,
     isFetching: true,
     hasAccount: false,
     isSubmitting: false,
@@ -76,7 +87,8 @@ class JoinTrip extends React.Component {
     try {
       const emailObj = {
         type: "direct",
-        email: this.email
+        email: this.email,
+        key: this.key
       };
       const response = await fetch(`${API_URL}/trip/user/add/${id}`, {
         method: "POST",
@@ -88,7 +100,7 @@ class JoinTrip extends React.Component {
       const responseData = await response.json();
       if (response.status === 200) {
         this.setState({
-          redirect: true,
+          showSuccessPage: true,
           isSubmitting: false
         });
       } else {
@@ -117,12 +129,14 @@ class JoinTrip extends React.Component {
     });
     const { id } = this.props.match.params;
     const { search } = this.props.location;
-    const { email } = queryString.parse(search);
+    const { email, key } = queryString.parse(search);
     // store result for later use
+    this.key = key;
     this.email = email;
     try {
       const emailObj = {
-        email
+        email,
+        key
       };
       const response = await fetch(`${API_URL}/join/${id}`, {
         method: "POST",
@@ -158,6 +172,12 @@ class JoinTrip extends React.Component {
     }
   }
 
+  onRequestSuccess = () => {
+    this.setState({
+      showSuccessPage: true
+    });
+  };
+
   render() {
     const {
       isFetching,
@@ -165,11 +185,12 @@ class JoinTrip extends React.Component {
       serverFetchingError,
       serverSendingError,
       adminName,
-      isSubmitting
+      isSubmitting,
+      showSuccessPage
     } = this.state;
-    const directJoinButtonProps ={
+    const directJoinButtonProps = {
       disabled: isSubmitting
-    }
+    };
     const { id } = this.props.match.params;
     if (this.state.redirect) {
       const msg = hasAccount
@@ -178,8 +199,7 @@ class JoinTrip extends React.Component {
       return (
         <Redirect
           to={{
-            pathname: "/login",
-            state: { msg }
+            pathname: "/login"
           }}
         />
       );
@@ -201,104 +221,40 @@ class JoinTrip extends React.Component {
           <BackgroundContainer subHeight="40">
             {!serverFetchingError.status ? (
               <>
-                {hasAccount ? (
+                {showSuccessPage ? (
                   <Container>
-                    <ButtonContainer>
-                      <JoinButton {...directJoinButtonProps} isSubmitting={isSubmitting} onClick={this.submitData}>
-                        Join Trip
-                      </JoinButton>
-                      <AlertContainer mt="2">
-                        <Alert
-                          message={serverSendingError.message}
-                          type="error"
-                        />
-                      </AlertContainer>
-                    </ButtonContainer>
+                    <UserAddSuccess adminName={adminName} />
                   </Container>
                 ) : (
-                  <div className={styles["form-box"]}>
-                    <div className={styles["form-inner-box"]}>
-                      <p className={styles["form-title"]}>
-                        Join {adminName}'s trip
-                      </p>
-                      <Formik
-                        validationSchema={Yup.object().shape({
-                          password: Yup.string()
-                            .min(8, "Password is too small")
-                            .max(13)
-                            .required("Password required"),
-                          email: Yup.string()
-                            .email("Email must be of valid format")
-                            .required("Email required"),
-                          name: Yup.string().required("Name required")
-                        })}
-                        onSubmit={async (
-                          values,
-                          { setSubmitting, setErrors }
-                        ) => {
-                          try {
-                            const formObj ={
-                              ...values,
-                              type: 'form'
-                            }
-                            const response = await fetch(
-                              `${API_URL}/trip/user/add/${id}`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify(formObj)
-                              }
-                            );
-                            if (response.status === 200) {
-                              this.setState({
-                                redirect: true
-                              });
-                            } else {
-                              const responseData = await response.json();
-                              setErrors({password: responseData.msg})
-                            }
-                          } catch (e) {
-                            setErrors({
-                              password: 'Server is Down. Please try after some time.'
-                            })
-                          }
-                        }}
-                        initialValues={{ password: "", name: "", email: "" }}
-                      >
-                        {({ isSubmitting }) => {
-                          return (
-                            <Form>
-                              <InputLabelError
-                                inputName="name"
-                                inputType="text"
-                                inputLabel="Name"
-                              />
-                              <InputLabelError
-                                inputName="email"
-                                inputType="email"
-                                inputLabel="Email"
-                              />
-                              <InputLabelError
-                                inputName="password"
-                                inputType="password"
-                                inputLabel="Password"
-                              />
-
-                              <button
-                                type="submit"
-                                className={styles["form-submit-button"]}
-                                disabled={isSubmitting}
-                              >
-                                Submit
-                              </button>
-                            </Form>
-                          );
-                        }}
-                      </Formik>
-                    </div>
-                  </div>
+                  <>
+                    {hasAccount ? (
+                      <Container>
+                        <ButtonContainer>
+                          <JoinButton
+                            {...directJoinButtonProps}
+                            isSubmitting={isSubmitting}
+                            onClick={this.submitData}
+                          >
+                            {isSubmitting ? <Spinner /> : "Join Trip"}
+                          </JoinButton>
+                          <AlertContainer mt="2">
+                            <Alert
+                              message={serverSendingError.message}
+                              type="error"
+                            />
+                          </AlertContainer>
+                        </ButtonContainer>
+                      </Container>
+                    ) : (
+                      <NoAccountJoinTrip
+                        onRequestSuccess={this.onRequestSuccess}
+                        adminName={adminName}
+                        email={this.email}
+                        key={this.key}
+                        id={id}
+                      />
+                    )}
+                  </>
                 )}
               </>
             ) : (
