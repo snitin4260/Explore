@@ -70,7 +70,7 @@ app.post('/api/login',
 )
 
 // Endpoint to logout
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
   req.logout()
   res.status(200).send({ msg: 'user logged Out' })
 })
