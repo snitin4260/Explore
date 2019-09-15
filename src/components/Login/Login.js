@@ -11,6 +11,7 @@ import styles from "./Login.module.css";
 import { API_URL } from "../../api";
 import { updateUsername, getUsername } from "../../actions/userData";
 import { getUsernameLs } from "../../util/index";
+import { JoinButton, Spinner } from "../trips/JoinTrip";
 
 const mapStateToProps = state => ({
   user: state.user
@@ -36,6 +37,8 @@ const SuccessMessage = styled.div`
   font-family: "Roboto", sans-serif;
 `;
 
+const SubmitButton = styled(JoinButton)``;
+
 class Login extends React.Component {
   state = {
     redirect: false,
@@ -45,20 +48,11 @@ class Login extends React.Component {
   componentDidMount() {
     this.hasUnmounted = false;
     //
-    const { user, getUsername, location } = this.props;
-    if (user.userName) {
+    const { user, getUsername } = this.props;
+    if (user.userName || getUsernameLs()) {
       return;
     }
-    if (getUsernameLs()  && !this.hasUnmounted) {
-       location.state?
-      this.setState({
-        redirectToOrigin: true
-      }):
-      this.setState({
-        redirect: true
-      });
 
-    }
     getUsername();
   }
 
@@ -66,35 +60,23 @@ class Login extends React.Component {
     this.hasUnmounted = true;
   }
 
-  componentDidUpdate(prevProps) {
-    // to make render method pure and to avoid setstates inside render
-    const { state } = this.props.location;
-    if (prevProps.user.userName !== this.props.user.userName) {
-      state
-        ? this.setState({
-            redirectToOrigin: true
-          })
-        : this.setState({
-            redirect: true
-          });
-    }
-  }
-
   render() {
-    console.log(this.props);
-    if (this.state.redirectToOrigin) {
-      return <Redirect to={`${this.props.location.state.from.pathname}`} />;
-    }
-    if (this.state.redirect) {
-      return <Redirect to="/trip" />;
-    }
     const { user } = this.props;
     const { state } = this.props.location;
+    const { status } = user.fetchError;
+
+    if (this.state.redirect || user.userName || getUsernameLs()) {
+      return state && state.from ? (
+        <Redirect to={`${this.props.location.state.from.pathname}`} />
+      ) : (
+        <Redirect to="/trip" />
+      );
+    }
+
     //user data is not there in localSt and redux store
     // making request to server to know whether user is logged in
     //return null until then
-    if (state && state.showNothingUntilCheck && user.isFetchingData)
-      return null;
+    if (!status) return null;
     return (
       <>
         <LogoHeader />
@@ -118,7 +100,7 @@ class Login extends React.Component {
                     },
                     body: JSON.stringify(values)
                   });
-                  setSubmitting(false)
+                  setSubmitting(false);
                   const responseObject = await response.json();
                   if (response.status === 200) {
                     this.props.updateUsername(responseObject.userName);
@@ -156,13 +138,13 @@ class Login extends React.Component {
                       inputLabel="Password"
                     />
 
-                    <button
+                    <SubmitButton
                       type="submit"
-                      className={styles["form-submit-button"]}
                       disabled={isSubmitting}
+                      isSubmitting={isSubmitting}
                     >
-                      Submit
-                    </button>
+                      {isSubmitting ? <Spinner /> : "Submit"}
+                    </SubmitButton>
                   </Form>
                 );
               }}

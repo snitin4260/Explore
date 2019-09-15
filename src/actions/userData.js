@@ -55,3 +55,7 @@ export const updateUsername = userName => ({
     userName
   }
 })
+
+export const resetStatus = _  => ({
+  type: RESET_STATUS
+})

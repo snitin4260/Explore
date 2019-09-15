@@ -2,7 +2,8 @@ import {
   UPDATE_USERNAME,
   GET_USERNAME_START,
   GET_USERNAME_SUCCESS,
-  GET_USERNAME_FAIL
+  GET_USERNAME_FAIL,
+  RESET_STATUS
 } from "../actions/actionConstants";
 
 const initialState = {
@@ -48,6 +49,16 @@ export default (state = initialState, action) => {
       fetchError: {
         error: action.payload.msg,
         status: action.payload.status
+      }
+    };
+  }
+
+  if (action.type === RESET_STATUS) {
+    return {
+      ...state,
+      fetchError: {
+        error: null,
+        status: null
       }
     };
   }
