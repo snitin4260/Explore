@@ -1,15 +1,18 @@
 import React from "react";
 import { DragDropContext } from "react-beautiful-dnd";
+import { connect } from "react-redux";
+import styled from "styled-components";
+
 import Column from "./Column";
 import createTodoItem from "../../actions/createTodoItem";
-import SlidingNote from "./SlidingNote";
+// import SlidingNote from "./SlidingNote";
 import setTodoObject from "../../actions/setTodoObject";
 import getTodoData from "../../actions/getTodoData";
 import deleteTodoItem from "../../actions/deleteTodoItem";
 import setTripObject from "../../actions/setTripObject";
 import editTodoItem from "../../actions/editTodoItem";
 import dragAndDropHandle from "../../actions/dragAndDropActivity";
-import {dragAndDropDataSend} from "../../actions/dragAndDropActivity";
+import { dragAndDropDataSend } from "../../actions/dragAndDropActivity";
 import {
   showSlider,
   hideSlider,
@@ -17,10 +20,9 @@ import {
   hideEditWindow
 } from "../../actions/controlWindowState";
 import Overlay from "../Overlay/Overlay";
-import { connect } from "react-redux";
 import UserDashBoard from "../UserdashBoard/UserDashBoard";
 import Modal from "./Modal";
-import styled from "styled-components";
+import Alert from "../Alert/Alert";
 
 /**     Redux */
 const mapStateToProps = state => ({
@@ -62,13 +64,10 @@ const mapDispatchToProps = dispatch => {
     dragAndDropHandle: ({ tripId, source, destination, draggableId }) => {
       dispatch(dragAndDropHandle({ tripId, source, destination, draggableId }));
     },
-    dragAndDropDataSend: ({
-      tripId,
-      source,
-      destination,
-      draggableId
-    })=> {
-      dispatch(dragAndDropDataSend({tripId,source,destination,draggableId}))
+    dragAndDropDataSend: ({ tripId, source, destination, draggableId }) => {
+      dispatch(
+        dragAndDropDataSend({ tripId, source, destination, draggableId })
+      );
     }
   };
 };
@@ -143,11 +142,10 @@ const Lists = styled.div`
 `;
 
 const LoaderContainer = styled.div`
- display: flex;
- flex-direction: column;
- align-items: center;
-
-`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const LoaderInput = styled.div`
   flex: 0 0 2rem;
@@ -156,10 +154,10 @@ const LoaderInput = styled.div`
   margin-bottom: 2rem;
 `;
 const LoaderColumnConatiner = styled.div`
- display: grid;
- grid-template-columns: repeat(3, minmax(100px, 300px));
- grid-template-rows: 300px;
- grid-column-gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(100px, 300px));
+  grid-template-rows: 300px;
+  grid-column-gap: 10px;
 `;
 
 /*************** styles end */
@@ -179,7 +177,7 @@ class TodoApp extends React.Component {
 
   handleChange = e => {
     const { value } = e.target;
-    console.log(e)
+    console.log(e);
     if (value.length <= 70)
       this.setState({
         text: value
@@ -199,8 +197,8 @@ class TodoApp extends React.Component {
     });
   };
 
-  onDragEnd =  result => {
-    const { dragAndDropHandle ,dragAndDropDataSend } = this.props;
+  onDragEnd = result => {
+    const { dragAndDropHandle, dragAndDropDataSend } = this.props;
     const { id } = this.props.match.params;
     const { destination, source, draggableId } = result;
     if (!destination) return;
@@ -257,7 +255,8 @@ class TodoApp extends React.Component {
       showEditWindow,
       hideEditWindow,
       editTodoItem,
-      deleteTodoItem,todo
+      deleteTodoItem,
+      todo
     } = this.props;
     if (!this.getExactTripTodo()) return null;
     const {
@@ -268,77 +267,74 @@ class TodoApp extends React.Component {
       isLoading
     } = this.getExactTripTodo();
     return (
-      // bg="#0079bf"
-      <>
-        {error.fetchingDataError ? (
-          <div>Failed fetching</div>
-        ) : (
-          <>
-            <UserDashBoard selected="todo">
-              <Main>
-                <TodoTitle>Todo</TodoTitle>
-                {isLoading ? (
-                  <LoaderContainer>
-                    <LoaderInput className="loadingDiv"></LoaderInput>
-                    <LoaderColumnConatiner>
-                      <div className="loadingDiv" />
-                      <div className="loadingDiv" />
-                      <div className="loadingDiv" />
-                    </LoaderColumnConatiner>
-                  </LoaderContainer>
-                ) : (
-                  <>
-                    <TodoInput
-                      onKeyPress={this.handleSubmit}
-                      onChange={this.handleChange}
-                      value={this.state.text}
-                      placeholder="What needs to be done?"
-                      autoFocus
-                    />
-
-                    <Container>
-                      <DragDropContext onDragEnd={this.onDragEnd}>
-                        <Lists className="lists">
-                          {columnOrder.map(columnId => {
-                            const column = columns[columnId];
-                            const taskDetailArray = column.taskIds.map(
-                              taskId => tasks[taskId]
-                            );
-                            return (
-                              <Column
-                                showEditWindow={showEditWindow}
-                                deleteTodoItem={deleteTodoItem}
-                                showSlider={showSlider}
-                                column={column}
-                                tripId={id}
-                                key={columnId}
-                                tasks={taskDetailArray}
-                                deleteItemState={
-                                  this.getExactTripTodo().deleteItemState
-                                }
-                              />
-                            );
-                          })}
-                        </Lists>
-                      </DragDropContext>
-                    </Container>
-                  </>
-                )}
-                {this.displayEditWindow() && <Overlay />}
-                {this.displayEditWindow() && (
-                  <Modal
-                    tripId={id}
-                    hideEditWindow={hideEditWindow}
-                    taskItem={this.getEditItemDetails()}
-                    editTodoItem={editTodoItem}
-                    editWindowState={this.getExactTripTodo().editWindowState}
+      <UserDashBoard selected="todo">
+        <Main>
+          {error.fetchingDataError.status ? (
+            <Alert type="error" message={error.fetchingDataError.message}/>
+          ) : (
+            <>
+              <TodoTitle>Todo</TodoTitle>
+              {isLoading ? (
+                <LoaderContainer>
+                  <LoaderInput className="loadingDiv"></LoaderInput>
+                  <LoaderColumnConatiner>
+                    <div className="loadingDiv" />
+                    <div className="loadingDiv" />
+                    <div className="loadingDiv" />
+                  </LoaderColumnConatiner>
+                </LoaderContainer>
+              ) : (
+                <>
+                  <TodoInput
+                    onKeyPress={this.handleSubmit}
+                    onChange={this.handleChange}
+                    value={this.state.text}
+                    placeholder="What needs to be done?"
+                    autoFocus
                   />
-                )}
-              </Main>
-            </UserDashBoard>
-          </>
-        )}
-      </>
+
+                  <Container>
+                    <DragDropContext onDragEnd={this.onDragEnd}>
+                      <Lists className="lists">
+                        {columnOrder.map(columnId => {
+                          const column = columns[columnId];
+                          const taskDetailArray = column.taskIds.map(
+                            taskId => tasks[taskId]
+                          );
+                          return (
+                            <Column
+                              showEditWindow={showEditWindow}
+                              deleteTodoItem={deleteTodoItem}
+                              showSlider={showSlider}
+                              column={column}
+                              tripId={id}
+                              key={columnId}
+                              tasks={taskDetailArray}
+                              deleteItemState={
+                                this.getExactTripTodo().deleteItemState
+                              }
+                            />
+                          );
+                        })}
+                      </Lists>
+                    </DragDropContext>
+                  </Container>
+                </>
+              )}
+              {this.displayEditWindow() && <Overlay />}
+              {this.displayEditWindow() && (
+                <Modal
+                  tripId={id}
+                  hideEditWindow={hideEditWindow}
+                  taskItem={this.getEditItemDetails()}
+                  editTodoItem={editTodoItem}
+                  editWindowState={this.getExactTripTodo().editWindowState}
+                />
+              )}
+            </>
+          )}
+        </Main>
+      </UserDashBoard>
     );
   }
 }

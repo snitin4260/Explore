@@ -47,8 +47,6 @@ export const getUsername = _ => async dispatch => {
   }
 }
 
-
-
 export const updateUsername = userName => ({
   type: UPDATE_USERNAME,
   payload: {
@@ -56,6 +54,6 @@ export const updateUsername = userName => ({
   }
 })
 
-export const resetStatus = _  => ({
+export const resetStatus = _ => ({
   type: RESET_STATUS
 })

@@ -63,11 +63,11 @@ app.post('/api/login',
   (req, res) => {
     // console.log(req)
     // if (req.user) {
-      const userName = req.user.name
-      const _id = req.user.id
-      req.session['userId'] = _id
-      res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
-      res.status(200).send({ userName, _id })
+    const userName = req.user.name
+    const _id = req.user.id
+    req.session['userId'] = _id
+    res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
+    res.status(200).send({ userName, _id })
     // }
     // res.status(401).json({ msg: 'invalid password' })
   }
@@ -75,9 +75,9 @@ app.post('/api/login',
 
 // Endpoint to logout
 app.get('/logout', (req, res) => {
- req.logout()
+  req.logout()
   res.clearCookie('user_sid')
-  
+
   res.status(200).send({ msg: 'user logged Out' })
 })
 

@@ -3,7 +3,6 @@ const Schema = mongoose.Schema
 const todoSchema = new Schema({
   text: { type: String },
 
-
   createdAt: {
     type: Date,
     default: Date.now

@@ -10,7 +10,7 @@ export default tripId => ({
   }
 })
 
-export const changeItinerary = ({ tripId, _id, activity,location }) => ({
+export const changeItinerary = ({ tripId, _id, activity, location }) => ({
   type: EDIT_ITINERARY_DATA,
   payload: {
     tripId,

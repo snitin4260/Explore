@@ -24,7 +24,10 @@ export default (state = {}, action) => {
       return produce(state, draft => {
         draft[action.payload.tripId] = {
           error: {
-            fetchingDataError: false,
+            fetchingDataError: {
+              status: false,
+              message: ''
+            },
             createTodoError: false,
             editItemError: false,
             deleteItemError: false
@@ -107,7 +110,8 @@ export default (state = {}, action) => {
         const { tripId, error } = action.payload
         const todo = draft[tripId]
         todo.isLoading = false
-        todo.error.fetchingDataError = error
+        todo.error.fetchingDataError.status = true
+        todo.error.fetchingDataError.message = error
       })
     }
     case CREATE_TODO_ITEM_SUCCESS: {
