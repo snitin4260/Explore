@@ -29,7 +29,8 @@ import {
   ADD_DRAG_AND_DROP_DATA,
   SET_DRAG_AND_DROP_DATA_OBJECT,
   RESET_DELETE_ERROR,
-  RESET_EDIT_ERROR
+  RESET_EDIT_ERROR,
+  RESET_DND_ERROR
 } from "../../actions/actionConstants";
 
 /**     Redux */
@@ -119,6 +120,14 @@ const mapDispatchToProps = dispatch => {
     resetEditError: tripId => {
       dispatch({
         type: RESET_EDIT_ERROR,
+        payload: {
+          tripId
+        }
+      });
+    },
+    resetdndError: tripId => {
+      dispatch({
+        type: RESET_DND_ERROR,
         payload: {
           tripId
         }
@@ -329,6 +338,7 @@ class TodoApp extends React.Component {
       deleteTodoItem,
       resetDeleteError,
       resetEditError,
+      resetdndError,
       todo
     } = this.props;
     if (!this.getExactTripTodo()) return null;
@@ -339,7 +349,7 @@ class TodoApp extends React.Component {
       error,
       isLoading
     } = this.getExactTripTodo();
-    const { createTodoError, editItemError, deleteItemError } = error;
+    const { createTodoError, editItemError, deleteItemError,dndError } = error;
     return (
       <>
         <UserDashBoard selected="todo">
@@ -380,6 +390,18 @@ class TodoApp extends React.Component {
                           dissapearingAlert
                         />
                       )}
+                      {dndError.status && (
+                        <Alert
+                          type="error"
+                          message={dndError.message}
+                          timeout={2000}
+                          width="400"
+                          tripId={id}
+                          closeAlertMessage={resetdndError}
+                          dissapearingAlert
+                        />
+                      )}
+                      
                       <DragDropContext onDragEnd={this.onDragEnd}>
                         <Lists className="lists">
                           {columnOrder.map(columnId => {

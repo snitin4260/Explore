@@ -18,7 +18,9 @@ import {
   HIDE_EDIT_WINDOW,
   RESET_TODO_STATE,
   RESET_EDIT_ERROR,
-  RESET_DELETE_ERROR
+  RESET_DELETE_ERROR,
+  DND_ERROR,
+  RESET_DND_ERROR
 } from "../actions/actionConstants";
 
 export default (state = {}, action) => {
@@ -40,6 +42,10 @@ export default (state = {}, action) => {
               message: ""
             },
             deleteItemError: {
+              status: false,
+              message: ""
+            },
+            dndError: {
               status: false,
               message: ""
             }
@@ -225,6 +231,24 @@ export default (state = {}, action) => {
         todo.deleteItemState.todoItemId = null;
         todo.error.deleteItemError.status = true;
         todo.error.deleteItemError.message = "Item could not be deleted";
+      });
+    }
+    case DND_ERROR: {
+      return produce(state, draft => {
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.error.dndError.status = true;
+        todo.error.dndError.message =
+          "Data could not be saved.Rolling back to previous data";
+      });
+    }
+
+    case RESET_DND_ERROR: {
+      return produce(state, draft => {
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.error.dndError.status = false;
+        todo.error.dndError.message = "";
       });
     }
 
