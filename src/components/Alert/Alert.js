@@ -16,7 +16,7 @@ const AlertContainer = styled.div`
   }};
 
   width: ${props => {
-    return props.width ? props.width : "auto";
+    return props.width ? `${props.width}px` : "auto";
   }};
 
   ${props =>
@@ -44,8 +44,9 @@ const SuccessIcon = styled(Icon)`
 `;
 
 const CloseIcon = styled(Icon)`
-  color: white;
+  color: black;
   margin-left: 0.5rem;
+  cursor: pointer;
 `;
 
 const ErrorIcon = styled(Icon)`
@@ -61,32 +62,33 @@ const Container = styled.div`
   ${props =>
     props.dissapearingAlert &&
     css`
-      justify-content: space-around;
+      justify-content: space-between;
     `}
 `;
 
 class Alert extends React.Component {
   componentDidMount() {
-    const { timeout, id } = this.props;
+    const { timeout, tripId, closeAlertMessage } = this.props;
     if (timeout) {
       this.timeout = setTimeout(() => {
-        this.closeAlertMessage(id);
+        closeAlertMessage(tripId);
       }, timeout);
     }
   }
 
   componentWillUnmount() {
-    if (this.props.id) {
-      clearTimeout(this.props.id);
+    if (this.props.dissapearingAlert) {
+      clearTimeout(this.timeout);
     }
   }
 
   render() {
     const {
       closeAlertMessage,
-      id,
+      tripId,
       message,
       type,
+      width,
       dissapearingAlert
     } = this.props;
     return (
@@ -94,6 +96,7 @@ class Alert extends React.Component {
         dissapearingAlert={dissapearingAlert}
         message={message}
         group={type}
+        width={width}
       >
         <Container dissapearingAlert={dissapearingAlert}>
           <ErrorIcon
@@ -120,19 +123,21 @@ class Alert extends React.Component {
           </SuccessIcon>
 
           <div>{message}</div>
-          {dissapearingAlert && <CloseIcon
-            onClick={() => {
-              closeAlertMessage(id);
-            }}
-            role="img"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 352 512"
-          >
-            <path
-              fill="currentColor"
-              d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
-            ></path>
-          </CloseIcon>}
+          {dissapearingAlert && (
+            <CloseIcon
+              onClick={() => {
+                closeAlertMessage(tripId);
+              }}
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 352 512"
+            >
+              <path
+                fill="currentColor"
+                d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
+              ></path>
+            </CloseIcon>
+          )}
         </Container>
       </AlertContainer>
     );

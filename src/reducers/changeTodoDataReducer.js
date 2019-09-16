@@ -1,4 +1,4 @@
-import produce from 'immer'
+import produce from "immer";
 import {
   SET_TRIP_TODO_OBJECT,
   CREATE_TODO_ITEM_SUCCESS,
@@ -16,8 +16,10 @@ import {
   DRAG_AND_DROP,
   SHOW_EDIT_WINDOW,
   HIDE_EDIT_WINDOW,
-  RESET_TODO_STATE
-} from '../actions/actionConstants'
+  RESET_TODO_STATE,
+  RESET_EDIT_ERROR,
+  RESET_DELETE_ERROR
+} from "../actions/actionConstants";
 
 export default (state = {}, action) => {
   switch (action.type) {
@@ -27,11 +29,20 @@ export default (state = {}, action) => {
           error: {
             fetchingDataError: {
               status: false,
-              message: ''
+              message: ""
             },
-            createTodoError: false,
-            editItemError: false,
-            deleteItemError: false
+            createTodoError: {
+              status: false,
+              message: ""
+            },
+            editItemError: {
+              status: false,
+              message: ""
+            },
+            deleteItemError: {
+              status: false,
+              message: ""
+            }
           },
           dndId: null,
           isLoading: true,
@@ -47,31 +58,31 @@ export default (state = {}, action) => {
           },
           columns: {
             todo: {
-              id: 'todo',
-              title: 'To-do',
+              id: "todo",
+              title: "To-do",
               taskIds: []
             },
             inprogress: {
-              id: 'inprogress',
-              title: 'In-progress',
+              id: "inprogress",
+              title: "In-progress",
               taskIds: []
             },
             done: {
-              id: 'done',
-              title: 'Done',
+              id: "done",
+              title: "Done",
               taskIds: []
             }
           },
-          columnOrder: ['todo', 'inprogress', 'done']
-        }
-      })
+          columnOrder: ["todo", "inprogress", "done"]
+        };
+      });
     }
     case GET_TODO_DATA_START: {
       return produce(state, draft => {
-        const { tripId } = action.payload
-        const todo = draft[tripId]
-        todo.isLoading = true
-      })
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.isLoading = true;
+      });
     }
 
     case DRAG_AND_DROP: {
@@ -81,145 +92,165 @@ export default (state = {}, action) => {
         destination,
         draggableId,
         dndId
-      } = action.payload
+      } = action.payload;
       return produce(state, draft => {
-        const todo = draft[tripId]
-        todo.dndId = dndId
-        const sourceColumn = todo.columns[source.droppableId]
-        sourceColumn.taskIds.splice(source.index, 1)
-        const destinationColumn = todo.columns[destination.droppableId]
-        destinationColumn.taskIds.splice(destination.index, 0, draggableId)
-      })
+        const todo = draft[tripId];
+        todo.dndId = dndId;
+        const sourceColumn = todo.columns[source.droppableId];
+        sourceColumn.taskIds.splice(source.index, 1);
+        const destinationColumn = todo.columns[destination.droppableId];
+        destinationColumn.taskIds.splice(destination.index, 0, draggableId);
+      });
     }
 
     case GET_TODO_DATA_SUCCESS: {
       return produce(state, draft => {
-        const { tripId, data, dndId } = action.payload
-        const { tasks, columns, columnOrder } = data
-        const todo = draft[tripId]
-        todo.isLoading = false
+        const { tripId, data, dndId } = action.payload;
+        const { tasks, columns, columnOrder } = data;
+        const todo = draft[tripId];
+        todo.isLoading = false;
         tasks.forEach(taskObj => {
-          const { _id, text, createdAt, note } = taskObj
+          const { _id, text, createdAt, note } = taskObj;
           todo.tasks[_id] = {
             id: _id,
             text,
             createdAt,
             note
-          }
-        })
-        todo.columns.todo.taskIds = columns.todo.taskIds
-        todo.columns.inprogress.taskIds = columns.inprogress.taskIds
-        todo.columns.done.taskIds = columns.done.taskIds
-        todo.columnOrder = columnOrder
-        todo.dndId = dndId
-      })
+          };
+        });
+        todo.columns.todo.taskIds = columns.todo.taskIds;
+        todo.columns.inprogress.taskIds = columns.inprogress.taskIds;
+        todo.columns.done.taskIds = columns.done.taskIds;
+        todo.columnOrder = columnOrder;
+        todo.dndId = dndId;
+      });
     }
 
     case GET_TODO_DATA_FAIL: {
       return produce(state, draft => {
-        const { tripId, error } = action.payload
-        const todo = draft[tripId]
-        todo.isLoading = false
-        todo.error.fetchingDataError.status = true
-        todo.error.fetchingDataError.message = error
-      })
+        const { tripId, error } = action.payload;
+        const todo = draft[tripId];
+        todo.isLoading = false;
+        todo.error.fetchingDataError.status = true;
+        todo.error.fetchingDataError.message = error;
+      });
     }
     case CREATE_TODO_ITEM_SUCCESS: {
       return produce(state, draft => {
-        const { todoItemId, text, tripId, createdAt, dndId } = action.payload
-        const todo = draft[tripId]
+        const { todoItemId, text, tripId, createdAt, dndId } = action.payload;
+        const todo = draft[tripId];
         todo.tasks[todoItemId] = {
           id: todoItemId,
           text,
           createdAt
-        }
-        todo.columns.todo.taskIds.unshift(todoItemId)
-        todo.dndId = dndId
-      })
+        };
+        todo.columns.todo.taskIds.unshift(todoItemId);
+        todo.dndId = dndId;
+      });
     }
     case SHOW_EDIT_WINDOW: {
       return produce(state, draft => {
-        const { tripId, todoItemId } = action.payload
-        const todo = draft[tripId]
-        todo.editWindowState.show = true
-        todo.editWindowState.todoItemId = todoItemId
-      })
+        const { tripId, todoItemId } = action.payload;
+        const todo = draft[tripId];
+        todo.editWindowState.show = true;
+        todo.editWindowState.todoItemId = todoItemId;
+      });
     }
 
     case HIDE_EDIT_WINDOW: {
       return produce(state, draft => {
-        const { tripId } = action.payload
-        const todo = draft[tripId]
-        todo.editWindowState.show = false
-        todo.editWindowState.todoItemId = null
-      })
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.editWindowState.show = false;
+        todo.editWindowState.todoItemId = null;
+      });
     }
 
     case EDIT_TODO_ITEM_START: {
       return produce(state, draft => {
-        const { tripId } = action.payload
-        const todo = draft[tripId]
-        todo.editWindowState.isLoading = true
-      })
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.editWindowState.isLoading = true;
+      });
     }
 
     case EDIT_TODO_ITEM_SUCCESS: {
       return produce(state, draft => {
-        const { tripId, todoItemId, text, dndId } = action.payload
-        const todo = draft[tripId]
-        todo.editWindowState.isLoading = false
-        todo.tasks[todoItemId].text = text
-        todo.dndId = dndId
-      })
+        const { tripId, todoItemId, text, dndId } = action.payload;
+        const todo = draft[tripId];
+        todo.editWindowState.isLoading = false;
+        todo.tasks[todoItemId].text = text;
+        todo.dndId = dndId;
+      });
     }
 
     case EDIT_TODO_ITEM_FAIL: {
       return produce(state, draft => {
-        const { tripId, error } = action.payload
-        const todo = draft[tripId]
-        todo.editWindowState.isLoading = false
-        todo.error.editItemError = error
-      })
+        const { tripId, error } = action.payload;
+        const todo = draft[tripId];
+        todo.editWindowState.isLoading = false;
+        todo.error.editItemError.status = true;
+        todo.error.editItemError.message = error;
+      });
     }
 
     case DELETE_TODO_ITEM_START: {
       return produce(state, draft => {
-        const { tripId, todoItemId } = action.payload
-        const todo = draft[tripId]
-        todo.deleteItemState.todoItemId = todoItemId
-        todo.deleteItemState.isLoading = true
-      })
+        const { tripId, todoItemId } = action.payload;
+        const todo = draft[tripId];
+        todo.deleteItemState.todoItemId = todoItemId;
+        todo.deleteItemState.isLoading = true;
+      });
     }
 
     case DELETE_TODO_ITEM_SUCCESS: {
       return produce(state, draft => {
-        const { tripId, todoItemId, columnId, dndId } = action.payload
-        const todo = draft[tripId]
-        todo.deleteItemState.isLoading = false
-        todo.deleteItemState.todoItemId = null
-        todo.dndId = dndId
-        delete todo.tasks[todoItemId]
-        const column = todo.columns[columnId]
-        const itemIndex = column.taskIds.indexOf(todoItemId)
-        column.taskIds.splice(itemIndex, 1)
-      })
+        const { tripId, todoItemId, columnId, dndId } = action.payload;
+        const todo = draft[tripId];
+        todo.deleteItemState.isLoading = false;
+        todo.deleteItemState.todoItemId = null;
+        todo.dndId = dndId;
+        delete todo.tasks[todoItemId];
+        const column = todo.columns[columnId];
+        const itemIndex = column.taskIds.indexOf(todoItemId);
+        column.taskIds.splice(itemIndex, 1);
+      });
     }
 
     case DELETE_TODO_ITEM_FAIL: {
       return produce(state, draft => {
-        const { tripId } = action.payload
-        const todo = draft[tripId]
-        todo.deleteItemState.isLoading = false
-        todo.deleteItemState.todoItemId = null
-        todo.error.deleteItemError = true
-      })
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.deleteItemState.isLoading = false;
+        todo.deleteItemState.todoItemId = null;
+        todo.error.deleteItemError.status = true;
+        todo.error.deleteItemError.message = "Item could not be deleted";
+      });
+    }
+
+    case RESET_DELETE_ERROR: {
+      return produce(state, draft => {
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.error.deleteItemError.status = false;
+        todo.error.deleteItemError.message = null;
+      });
+    }
+
+    case RESET_EDIT_ERROR: {
+      return produce(state, draft => {
+        const { tripId } = action.payload;
+        const todo = draft[tripId];
+        todo.error.editItemError.status = false;
+        todo.error.editItemError.message = null;
+      });
     }
 
     case RESET_TODO_STATE: {
       return produce(state, draft => {
-        const { tripId, data } = action.payload
-        draft[tripId] = data
-      })
+        const { tripId, data } = action.payload;
+        draft[tripId] = data;
+      });
     }
 
     // case SHOW_SLIDER: {
@@ -240,6 +271,6 @@ export default (state = {}, action) => {
     //   });
     // }
     default:
-      return state
+      return state;
   }
-}
+};

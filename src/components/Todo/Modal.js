@@ -1,6 +1,7 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
-import ErrorDisplay from "../ErrorDisplay/ErrorDisplay";
+import Alert from "../Alert/Alert"
+
 
 const ModalContainer = styled.div`
   position: fixed;
@@ -8,7 +9,7 @@ const ModalContainer = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -45,16 +46,16 @@ export const rotate = keyframes`
   100%  { transform: rotate(360deg); }
 `;
 export const Loader = styled.div`
-    height: 28px;
-    width: 28px;
-    animation: ${rotate} 0.8s infinite linear;
-    border: 8px solid green;
-    border-right-color: transparent;
-    border-radius: 50%;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+  height: 28px;
+  width: 28px;
+  animation: ${rotate} 0.8s infinite linear;
+  border: 8px solid green;
+  border-right-color: transparent;
+  border-radius: 50%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 class Modal extends React.Component {
@@ -87,7 +88,9 @@ class Modal extends React.Component {
       taskItem,
       hideEditWindow,
       editTodoItem,
-      editWindowState
+      editWindowState,
+      editItemError,
+      resetEditError
     } = this.props;
     const { isLoading } = editWindowState;
     const { todoItemId } = taskItem;
@@ -98,7 +101,17 @@ class Modal extends React.Component {
     return (
       <ModalContainer className="modal">
         {isLoading && <Loader />}
-        {/* <ErrorDisplay /> */}
+        {editItemError.status && (
+          <Alert
+            type="error"
+            message={editItemError.message}
+            timeout={2000}
+            width="300"
+            tripId={tripId}
+            closeAlertMessage={resetEditError}
+            dissapearingAlert
+          />
+        )}
         <TextArea
           ref={this.textAreaInput}
           value={this.state.text}
@@ -108,11 +121,10 @@ class Modal extends React.Component {
           <SaveButton
             isLoading={isLoading}
             onClick={() => {
-              if(text.trim()===''|| text=== taskItem.text){
+              if (text.trim() === "" || text === taskItem.text) {
                 hideEditWindow({ tripId });
-              }
-              else {
-              editTodoItem({ tripId, todoItemId, text });
+              } else {
+                editTodoItem({ tripId, todoItemId, text });
               }
             }}
             {...buttonProps}
