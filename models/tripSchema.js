@@ -23,7 +23,7 @@ const tripSchema = new mongoose.Schema({
     defalut: 'none',
     trim: true
   },
-  
+
   members: [],
 
   createdAt: {

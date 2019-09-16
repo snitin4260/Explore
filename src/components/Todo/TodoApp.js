@@ -2,6 +2,8 @@ import React from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { connect } from "react-redux";
 import styled from "styled-components";
+import {store} from "../../index"
+import shortid from 'shortid'
 
 import Column from "./Column";
 import createTodoItem from "../../actions/createTodoItem";
@@ -23,6 +25,7 @@ import Overlay from "../Overlay/Overlay";
 import UserDashBoard from "../UserdashBoard/UserDashBoard";
 import Modal from "./Modal";
 import Alert from "../Alert/Alert";
+import {ADD_DRAG_AND_DROP_DATA,SET_DRAG_AND_DROP_DATA_OBJECT} from "../../actions/actionConstants"
 
 /**     Redux */
 const mapStateToProps = state => ({
@@ -61,13 +64,30 @@ const mapDispatchToProps = dispatch => {
     deleteTodoItem: ({ tripId, todoItemId, columnId }) => {
       dispatch(deleteTodoItem({ tripId, todoItemId, columnId }));
     },
-    dragAndDropHandle: ({ tripId, source, destination, draggableId }) => {
-      dispatch(dragAndDropHandle({ tripId, source, destination, draggableId }));
+    dragAndDropHandle: ({ tripId, source, destination, draggableId,dndId }) => {
+      dispatch(dragAndDropHandle({ tripId, source, destination, draggableId,dndId }));
     },
-    dragAndDropDataSend: ({ tripId, source, destination, draggableId }) => {
+    dragAndDropDataSend: ({ tripId, source, destination, draggableId,dndId }) => {
       dispatch(
-        dragAndDropDataSend({ tripId, source, destination, draggableId })
+        dragAndDropDataSend({ tripId, source, destination, draggableId,dndId })
       );
+    },
+    cacheDragAndDropData : (id) => {
+      dispatch({
+        type: ADD_DRAG_AND_DROP_DATA,
+        payload: {
+          id,
+          data: store.getState().todo[id]
+        }
+      });
+    },
+    setDragAndDropDataObject: (id) => {
+      dispatch({
+        type: SET_DRAG_AND_DROP_DATA_OBJECT,
+        payload: {
+          id
+        }
+      })
     }
   };
 };
@@ -169,10 +189,16 @@ class TodoApp extends React.Component {
 
   componentDidMount() {
     const { id } = this.props.match.params;
-    const { setTodoObject, setTripObject, getTodoData } = this.props;
+    const {
+      setTodoObject,
+      setTripObject,
+      getTodoData,
+      setDragAndDropDataObject
+    } = this.props;
     setTripObject(id);
     setTodoObject(id);
     getTodoData(id);
+    setDragAndDropDataObject(id)
   }
 
   handleChange = e => {
@@ -198,7 +224,7 @@ class TodoApp extends React.Component {
   };
 
   onDragEnd = result => {
-    const { dragAndDropHandle, dragAndDropDataSend } = this.props;
+    const { dragAndDropHandle, dragAndDropDataSend,cacheDragAndDropData } = this.props;
     const { id } = this.props.match.params;
     const { destination, source, draggableId } = result;
     if (!destination) return;
@@ -209,18 +235,24 @@ class TodoApp extends React.Component {
     ) {
       return;
     }
+
+    const dndId = shortid.generate()
     dragAndDropHandle({
       tripId: id,
       destination,
       source,
-      draggableId
+      draggableId,
+      dndId
     });
+
+    cacheDragAndDropData(id)
 
     dragAndDropDataSend({
       tripId: id,
       destination,
       source,
-      draggableId
+      draggableId,
+      dndId
     });
   };
 
@@ -308,6 +340,7 @@ class TodoApp extends React.Component {
                               showSlider={showSlider}
                               column={column}
                               tripId={id}
+                          
                               key={columnId}
                               tasks={taskDetailArray}
                               deleteItemState={

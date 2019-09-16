@@ -15,7 +15,8 @@ import {
   DELETE_TODO_ITEM_SUCCESS,
   DRAG_AND_DROP,
   SHOW_EDIT_WINDOW,
-  HIDE_EDIT_WINDOW
+  HIDE_EDIT_WINDOW,
+  RESET_TODO_STATE
 } from '../actions/actionConstants'
 
 export default (state = {}, action) => {
@@ -32,6 +33,7 @@ export default (state = {}, action) => {
             editItemError: false,
             deleteItemError: false
           },
+          dndId: null,
           isLoading: true,
           tasks: {},
           editWindowState: {
@@ -73,9 +75,16 @@ export default (state = {}, action) => {
     }
 
     case DRAG_AND_DROP: {
-      const { tripId, source, destination, draggableId } = action.payload
+      const {
+        tripId,
+        source,
+        destination,
+        draggableId,
+        dndId
+      } = action.payload
       return produce(state, draft => {
         const todo = draft[tripId]
+        todo.dndId = dndId
         const sourceColumn = todo.columns[source.droppableId]
         sourceColumn.taskIds.splice(source.index, 1)
         const destinationColumn = todo.columns[destination.droppableId]
@@ -85,7 +94,7 @@ export default (state = {}, action) => {
 
     case GET_TODO_DATA_SUCCESS: {
       return produce(state, draft => {
-        const { tripId, data } = action.payload
+        const { tripId, data, dndId } = action.payload
         const { tasks, columns, columnOrder } = data
         const todo = draft[tripId]
         todo.isLoading = false
@@ -102,6 +111,7 @@ export default (state = {}, action) => {
         todo.columns.inprogress.taskIds = columns.inprogress.taskIds
         todo.columns.done.taskIds = columns.done.taskIds
         todo.columnOrder = columnOrder
+        todo.dndId = dndId
       })
     }
 
@@ -116,7 +126,7 @@ export default (state = {}, action) => {
     }
     case CREATE_TODO_ITEM_SUCCESS: {
       return produce(state, draft => {
-        const { todoItemId, text, tripId, createdAt } = action.payload
+        const { todoItemId, text, tripId, createdAt, dndId } = action.payload
         const todo = draft[tripId]
         todo.tasks[todoItemId] = {
           id: todoItemId,
@@ -124,6 +134,7 @@ export default (state = {}, action) => {
           createdAt
         }
         todo.columns.todo.taskIds.unshift(todoItemId)
+        todo.dndId = dndId
       })
     }
     case SHOW_EDIT_WINDOW: {
@@ -154,10 +165,11 @@ export default (state = {}, action) => {
 
     case EDIT_TODO_ITEM_SUCCESS: {
       return produce(state, draft => {
-        const { tripId, todoItemId, text } = action.payload
+        const { tripId, todoItemId, text, dndId } = action.payload
         const todo = draft[tripId]
         todo.editWindowState.isLoading = false
         todo.tasks[todoItemId].text = text
+        todo.dndId = dndId
       })
     }
 
@@ -181,10 +193,11 @@ export default (state = {}, action) => {
 
     case DELETE_TODO_ITEM_SUCCESS: {
       return produce(state, draft => {
-        const { tripId, todoItemId, columnId } = action.payload
+        const { tripId, todoItemId, columnId, dndId } = action.payload
         const todo = draft[tripId]
         todo.deleteItemState.isLoading = false
         todo.deleteItemState.todoItemId = null
+        todo.dndId = dndId
         delete todo.tasks[todoItemId]
         const column = todo.columns[columnId]
         const itemIndex = column.taskIds.indexOf(todoItemId)
@@ -199,6 +212,13 @@ export default (state = {}, action) => {
         todo.deleteItemState.isLoading = false
         todo.deleteItemState.todoItemId = null
         todo.error.deleteItemError = true
+      })
+    }
+
+    case RESET_TODO_STATE: {
+      return produce(state, draft => {
+        const { tripId, data } = action.payload
+        draft[tripId] = data
       })
     }
 

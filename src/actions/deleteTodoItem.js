@@ -1,11 +1,14 @@
 import {
   DELETE_TODO_ITEM_FAIL,
   DELETE_TODO_ITEM_SUCCESS,
-  DELETE_TODO_ITEM_START
+  DELETE_TODO_ITEM_START,
+  ADD_DRAG_AND_DROP_DATA
 } from '../actions/actionConstants'
 import { API_URL } from '../api'
 import { hideEditWindow } from './controlWindowState'
-import Column from '../components/Todo/Column'
+
+import { store } from '../index'
+import shortid from 'shortid'
 
 export default ({ tripId, todoItemId, columnId }) => {
   return async dispatch => {
@@ -30,12 +33,21 @@ export default ({ tripId, todoItemId, columnId }) => {
         body: JSON.stringify(deleteObj)
       })
       if (response.status === 200) {
+        const dndId = shortid.generate()
         dispatch({
           type: DELETE_TODO_ITEM_SUCCESS,
           payload: {
             tripId,
             todoItemId,
-            columnId
+            columnId,
+            dndId
+          }
+        })
+        dispatch({
+          type: ADD_DRAG_AND_DROP_DATA,
+          payload: {
+            id: tripId,
+            data: store.getState().todo[tripId]
           }
         })
         dispatch(hideEditWindow({ tripId }))

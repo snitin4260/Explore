@@ -152,8 +152,10 @@ class Header extends React.Component {
   };
   render() {
     const userFromLs = getUsernameLs();
+    console.log(userFromLs)
     const { userName, isFetchingData, fetchError } = this.props.user;
     const { error, status } = fetchError;
+    console.log(userName)
     return (
       <PageHeader>
         <Container>
@@ -176,7 +178,7 @@ class Header extends React.Component {
           )}
           {(userName || userFromLs) && (
             <IconContainer>
-              <Name>{(userName || userFromLs.userName).slice(0, 10)}...</Name>
+              <Name>{(userName || userFromLs.userName).slice(0, 10)}</Name>
               <UserSvg
                 role="img"
                 xmlns="http://www.w3.org/2000/svg"

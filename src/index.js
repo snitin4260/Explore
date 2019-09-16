@@ -8,6 +8,6 @@ import Root from './root'
 import './index.css'
 const middlewares = [thunk, logger]
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-const store = createStore(reducers, composeEnhancers(applyMiddleware(...middlewares)))
+export const store = createStore(reducers, composeEnhancers(applyMiddleware(...middlewares)))
 
 ReactDOM.render(<Root store={store} />, document.getElementById('root'))
