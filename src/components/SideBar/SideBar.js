@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import styled from "styled-components";
 
 import Invite from "../Invite/Invite"
+import Members from "../Members"
 
 const Container = styled.div`
   position: fixed;
@@ -120,7 +121,14 @@ class SideBar extends React.Component {
             />
           </Svg>
         </Logo>
-        <Logo>
+        {this.state.showMemberWindow && (
+          <Members tripId={id} hideMemberWindow={this.hideWindow} />
+        )}
+        <Logo
+          onClick={() => {
+            this.showWindow("showMemberWindow");
+          }}
+        >
           <Svg
             role="img"
             xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +145,11 @@ class SideBar extends React.Component {
         {this.state.showInviteWindow && (
           <Invite tripId={id} hideInviteWindow={this.hideWindow} />
         )}
-        <Logo onClick={()=>{this.showWindow("showInviteWindow")}}>
+        <Logo
+          onClick={() => {
+            this.showWindow("showInviteWindow");
+          }}
+        >
           <Svg
             role="img"
             xmlns="http://www.w3.org/2000/svg"

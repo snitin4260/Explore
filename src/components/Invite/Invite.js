@@ -25,7 +25,7 @@ let validEmailSchema = yup.object().shape({
     .min(1)
 });
 
-const InviteWindow = styled.div`
+export const InviteWindow = styled.div`
   background: white;
   position: fixed;
   top: 0;
@@ -40,14 +40,14 @@ const InviteForm = styled.form`
   margin-top: 2rem;
 `;
 
-const CloseContainer = styled(RounDiv)`
+export const CloseContainer = styled(RounDiv)`
   background: var(--main-bg-color);
 `;
-const InviteCloseSvg = styled(CloseSvg)`
+export const InviteCloseSvg = styled(CloseSvg)`
   color: white;
 `;
 
-const Content = styled.div`
+export const Content = styled.div`
   margin-top: 9rem;
   @media (max-width: 400px) {
     & {
@@ -57,13 +57,13 @@ const Content = styled.div`
   }
 `;
 
-const Container = styled.div`
+export const Container = styled.div`
   max-width: 40rem;
   margin: 0 auto;
   font-family: "Roboto", sans-serif;
 `;
 
-const Title = styled.h2`
+export const Title = styled.h2`
   font-size: 4rem;
   text-align: center;
 `;
