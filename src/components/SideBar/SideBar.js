@@ -42,18 +42,19 @@ const Svg = styled.svg`
 
 class SideBar extends React.Component {
   state = {
-    showInviteWindow: false
+    showInviteWindow: false,
+    showMemberWindow: false
   }
 
-  showInviteWindow = _ => {
+  showWindow = name => {
     this.setState({
-      showInviteWindow: true
+     [name]: true
     })
   }
 
-  hideInviteWindow = _ => {
+  hideWindow = name=> {
     this.setState({
-      showInviteWindow: false
+     [name]: false
     })
   }
 
@@ -134,9 +135,9 @@ class SideBar extends React.Component {
           </Svg>
         </Logo>
         {this.state.showInviteWindow && (
-          <Invite tripId={id} hideInviteWindow={this.hideInviteWindow} />
+          <Invite tripId={id} hideInviteWindow={this.hideWindow} />
         )}
-        <Logo onClick={this.showInviteWindow}>
+        <Logo onClick={()=>{this.showWindow("showInviteWindow")}}>
           <Svg
             role="img"
             xmlns="http://www.w3.org/2000/svg"

@@ -74,7 +74,8 @@ function Column (props) {
     tasks,
     tripId,
     deleteTodoItem,
-    deleteItemState
+    deleteItemState,
+    allDragDisabled
   } = props
   console.log(props)
   console.log(column.id)
@@ -94,7 +95,10 @@ function Column (props) {
                     key={taskObj.id}
                     draggableId={taskObj.id}
                     index={index}
-                    isDragDisabled={taskObj.id === deleteItemState.todoItemId}
+                    isDragDisabled={
+                      taskObj.id === deleteItemState.todoItemId ||
+                      allDragDisabled
+                    }
                   >
                     {provided => {
                       return (

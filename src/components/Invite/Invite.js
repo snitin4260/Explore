@@ -277,7 +277,8 @@ class Invite extends React.Component {
 
   closeWindow = _ => {
     const { hideInviteWindow } = this.props;
-    hideInviteWindow();
+    // argument is the parent state variable
+    hideInviteWindow("showInviteWindow");
   };
 
   componentDidMount() {

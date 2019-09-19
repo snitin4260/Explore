@@ -294,6 +294,13 @@ class TodoApp extends React.Component {
     });
 
     cacheDragAndDropData(id);
+          // dispatch({
+          //   type: ALL_DRAG_DISABLED,
+          //   payload: {
+          //     tripId:id
+          //   }
+          // });
+
 
     dragAndDropDataSend({
       tripId: id,
@@ -347,6 +354,7 @@ class TodoApp extends React.Component {
       columns,
       tasks,
       error,
+      allDragDisabled,
       isLoading
     } = this.getExactTripTodo();
     const { createTodoError, editItemError, deleteItemError,dndError } = error;
@@ -417,6 +425,7 @@ class TodoApp extends React.Component {
                                 column={column}
                                 tripId={id}
                                 key={columnId}
+                                allDragDisabled={allDragDisabled}
                                 tasks={taskDetailArray}
                                 deleteItemState={
                                   this.getExactTripTodo().deleteItemState

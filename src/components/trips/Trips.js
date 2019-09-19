@@ -39,13 +39,15 @@ class Trips extends React.Component {
               <div>
                 <div
                   style={{
-                    height: "200px"
+                    height: "100px",
+                    marginBottom: "1rem"
                   }}
                   className="loadingDiv"
                 />
                 <div
                   style={{
-                    height: "200px"
+                    height: "100px",
+                    marginBottom: "1rem"
                   }}
                   className="loadingDiv"
                 />
