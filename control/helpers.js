@@ -250,9 +250,7 @@ const columnOrderData = async (req, res) => {
     const todoOrder = await order.find()
     const fromArray = todoOrder[0][`${fromColumn}`].taskIds
     const fromId = fromArray.splice(fromIndex, 1)
-    // const removedIndex = await todoOrder[0][`${fromColumn}`].taskIds.splice(fromIndex, 1)
     const result = await order.findOneAndUpdate({ [`${fromColumn}`]: { taskIds: fromArray } })
-    // const newOrder = await todoOrder[0][`${toColumn}`].taskIds.splice(toIndex, 0, removedIndex)
     const toId = todoOrder[0][`${toColumn}`].taskIds
     toId.splice(toIndex, 0, fromId)
     const newOrderData = await order.findOneAndUpdate({ [`${toColumn}`]: { taskIds: toId } })
@@ -264,17 +262,13 @@ const columnOrderData = async (req, res) => {
 
 const updateTodoTask = async (req, res) => {
   try {
-    console.log(req.body)
-    // const _id = req.params.id
-    // const userId = req.cookies.userId
-    // const todoData = await todos.findById({ user: _id })
-    // const orders = await order.find()
-
-    const updatedTodo = await order.findOneAndUpdate({ id: req.body.taskId },
-      { text: req.body.text }, { new: true })
+    // const todo = await todos.find()
+    // console.log(todo)
+    const updatedTodo = await todos.findOneAndUpdate({ _id: req.body.taskId }, { text: req.body.text })
     console.log(updatedTodo)
     res.status(200).json({ msg: 'Data Updated' })
   } catch (error) {
+    console.log(error)
     res.status(404).json(error)
   }
 }
