@@ -11,7 +11,7 @@ const postNewTrip = async (req, res) => {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
-      admin: req.cookies.userId,
+      // admin: req.cookies.userId,
       member: []
     }
     const newTripData = await trips.create(Trip)
@@ -38,6 +38,7 @@ const tripsById = async (req, res) => {
 }
 const allTrip = async (req, res) => {
   try {
+    // console.log(req.session.userId)
     const allTripsData = await trips.find()
     const allTripData = allTripsData.map(obj => {
       const trips = {}
@@ -150,10 +151,13 @@ const itineraryData = async (req, res) => {
 }
 
 const getUser = async (req, res) => {
-  // console.log(req.cookies.userId)
+  // console.log('+' + req.cookies.userId)
+  // console.log('im in')
   if (req.cookies.userId !== undefined) {
-    const currentUser = User.findById(req.cookies.userId)
-    if (currentUser.length !== 0) { return res.status(200).json({ userName: currentUser.name }) }
+    const currentUser = await User.findById(req.cookies.userId)
+    if (currentUser.length !== 0) {
+      return res.status(200).json({ userName: currentUser.name })
+    }
   }
   res.status(401).json({ msg: 'user not found' })
 }
@@ -161,10 +165,11 @@ const getUser = async (req, res) => {
 // Todo logic
 const getAllTodos = async (req, res) => {
   try {
-    const userId = req.cookies.userId
-    const todo = await todos.find({ user: userId })
-    let column = await order.find({ user: userId })
-    if (column.length === 0) { column = await createOrder(userId) }
+    const tripId = req.params.id
+    // const userId = req.cookies.userId
+    const todo = await todos.find()
+    let column = await order.find()
+    if (column.length === 0) { column = await createOrder() }
     const columnOrders = await column.map(item => {
       const order = {}
       order['todo'] = item.todo
@@ -190,28 +195,33 @@ const getAllTodos = async (req, res) => {
 
 const createTodo = async (req, res) => {
   try {
-    const userId = req.cookies.userId
+    const tripId = req.params.id
     const Todo = {
       text: req.body.text,
       id: uuidv1(),
-      user: userId
+      user: tripId
     }
     const newTodo = await todos.create(Todo)
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
-    const column = await order.find({ user: userId })
+
+    const column = await order.find()
+    // const column = await order.find()
     const newTask = column[0].todo.taskIds
     newTask.push(newTodo.id)
-    const result = await order.findOneAndUpdate({ _id: userId }, { todo: { taskIds: newTask } })
+    const result = await order.findOneAndUpdate({ todo: { taskIds: newTask } })
+    // const result = await order.findOneAndUpdate({ _id: userId }, { todo: { taskIds: newTask } })
+
+    // console.log('+' + result)
     // console.log(column[0].todo.taskIds)
     // order.update({ _id: userId }, { todo: { taskIds: newTask } })
     res.status(201).send({ ...todoData })
   } catch (error) {
-    // console.log(error)
+    console.log(error)
     res.status(400).json(error)
   }
 }
 
-async function createOrder (userId) {
+async function createOrder () {
   const columnsOrder = {
     todo: {
       taskIds: []
@@ -222,8 +232,8 @@ async function createOrder (userId) {
     done: {
       taskIds: []
     },
-    columnOrder: ['todo', 'inprogress', 'done'],
-    user: userId
+    columnOrder: ['todo', 'inprogress', 'done']
+    // user: tripId
   }
   const data = await order.create(columnsOrder)
   return data
@@ -231,14 +241,22 @@ async function createOrder (userId) {
 
 const columnOrderData = async (req, res) => {
   try {
-    const tripId = req.body.tripId
+    const tripId = req.params.id
+    console.log(req.body)
     const fromColumn = req.body.sourceColumnId
     const toColumn = req.body.destinationColumnId
     const fromIndex = req.body.sourceIndex
     const toIndex = req.body.destinationIndex
     const todoOrder = await order.find()
-    const removedIndex = await todoOrder[0].fromColumn.taskIds.splice(fromIndex, 1)
-    const newOrder = await todoOrder[0].toColumn.taskIds.splice(toIndex, 0, removedIndex)
+    const fromArray = todoOrder[0][`${fromColumn}`].taskIds
+    const fromId = fromArray.splice(fromIndex, 1)
+    // const removedIndex = await todoOrder[0][`${fromColumn}`].taskIds.splice(fromIndex, 1)
+    const result = await order.findOneAndUpdate({ [`${fromColumn}`]: { taskIds: fromArray } })
+    // const newOrder = await todoOrder[0][`${toColumn}`].taskIds.splice(toIndex, 0, removedIndex)
+    const toId = todoOrder[0][`${toColumn}`].taskIds
+    toId.splice(toIndex, 0, fromId)
+    const newOrderData = await order.findOneAndUpdate({ [`${toColumn}`]: { taskIds: toId } })
+    res.status(200).end()
   } catch (error) {
     res.status(404).json(error)
   }
@@ -246,10 +264,15 @@ const columnOrderData = async (req, res) => {
 
 const updateTodoTask = async (req, res) => {
   try {
-    const _id = req.params.id
-    const userId = req.cookies.userId
+    console.log(req.body)
+    // const _id = req.params.id
+    // const userId = req.cookies.userId
     // const todoData = await todos.findById({ user: _id })
-    const updatedTodo = await todos.findOneAndUpdate({ user: _id }, { text: req.body.text })
+    // const orders = await order.find()
+
+    const updatedTodo = await order.findOneAndUpdate({ id: req.body.taskId },
+      { text: req.body.text }, { new: true })
+    console.log(updatedTodo)
     res.status(200).json({ msg: 'Data Updated' })
   } catch (error) {
     res.status(404).json(error)
@@ -258,10 +281,15 @@ const updateTodoTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    // const user = await trips.findById(req.body.userId)
-    const deleteTodo = await User.todo.findOneAndDelete({ id: req.body.taskId })
-    res.status(200).json(`task Deleted ${deleteTodo.tripName}`)
+    const column = req.body.columnId
+    const orders = await order.find()
+    const deleteItem = orders[0][`${column}`].taskIds
+    const index = deleteItem.indexOf(req.body.taskId)
+    const updatedArray = deleteItem.splice(index, 1)
+    const deleteTodo = await order.findOneAndUpdate({ [`${column}`]: { taskIds: deleteItem } })
+    res.status(200).json(`task Deleted ${deleteTodo}`)
   } catch (error) {
+    console.log(error)
     res.status(404).json(error)
   }
 }

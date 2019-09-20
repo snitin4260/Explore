@@ -15,7 +15,9 @@ const dbConn = require('./models/config')
 const MongoStore = require('connect-mongo')(session)
 const path = require('path')
 const staticify = require('staticify')(path.join(__dirname, 'views'))
+app.use(cookieParser())
 app.use(bodyParser.json())
+
 // app.use(function (req, res, next) {
 //   // console.log(req)
 //   res.header('Access-Control-Allow-Origin', '*')
@@ -26,17 +28,15 @@ app.use(bodyParser.json())
 const db = dbConn.db
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(staticify.middleware)
-app.use(cookieParser())
-
 app.use(session({
   store: new MongoStore({
     mongooseConnection: db
   }),
-  key: 'user_sid',
+  key: 'userSid',
   secret: 'Akshay13578111851171',
-  resave: true,
+  resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 60000 }
+  cookie: { maxAge: 60000, secure: false }
 }))
 
 app.use(passport.initialize())
@@ -63,35 +63,44 @@ app.post('/api/login',
   (req, res) => {
     const userName = req.user.name
     const _id = req.user.id
-    req.session['userId'] = _id
-    res.cookie('userId', _id, { maxAge: 60000, httpOnly: true })
+    req.session.userId = _id
+    res.cookie('userId', _id, { maxAge: 60000, httpOnly: false })
     res.status(200).send({ userName, _id })
   }
 )
+// app.use((req, res, next) => {
+//   res.locals.currentUser = req.session.userId
+//   next()
+// })
+
+// app.use((req, res) => {
+//   MongoStore.get(req.sessionId, function (err, session) {
+//     if (err) return console.log(err)
+//     if (session) {
+//       console.log('22222' + session)
+//     }
+//   })
+// })
 
 // Endpoint to logout
 app.get('/api/logout', (req, res) => {
   req.logout()
-  // res.clearCookie('user_sid')
-
+  req.session.destroy()
+  // res.clearCookie('user_Id')
   res.status(200).send({ msg: 'user logged Out' })
 })
 
 app.get('/api/trip/count', (req, res) => {
   res.status(200).send({ tripCount: 2 })
 })
-// app.use(function (req, res, next) {
-//   console.log(req.session)
-//   console.log('===================')
-//   // console.log(req.user)
-//   console.log('+++' + req.headers.cookie)
-// })
+
+// req.locals.userId = req.session.passport._id
 
 const isLoggedIn = async (req, res, next) => {
   if (req.session.passport !== undefined) {
     return next()
   }
-  res.status(401).json({ msg: 'user not found' })
+  res.status(404).json({ msg: 'user not found' })
 }
 
 app.use('/api', tripRoutes)
