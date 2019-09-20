@@ -30,6 +30,9 @@ export const dragAndDropDataSend = ({
   return async dispatch => {
     const response = await fetch(`${API_URL}/todo/dnd/${tripId}`, {
       method: 'POST',
+      headers: {
+        'Content-Type': "application/json"
+      },
       body: JSON.stringify({
         tripId,
         sourceColumnId: source.droppableId,
