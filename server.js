@@ -30,13 +30,14 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(staticify.middleware)
 app.use(session({
   store: new MongoStore({
-    mongooseConnection: db
+    mongooseConnection: db,
+    ttl: 14 * 24 * 60 * 60
   }),
   key: 'userSid',
   secret: 'Akshay13578111851171',
   resave: false,
   saveUninitialized: true,
-  cookie: { maxAge: 60000, secure: false }
+  cookie: { maxAge: 600000000, secure: false }
 }))
 
 app.use(passport.initialize())
@@ -63,8 +64,9 @@ app.post('/api/login',
   (req, res) => {
     const userName = req.user.name
     const _id = req.user.id
-    req.session.userId = _id
-    res.cookie('userId', _id, { maxAge: 60000, httpOnly: false })
+    const user = req.session
+    user._id = _id
+    // res.cookie('userId', _id, { maxAge: 60000, httpOnly: false })
     res.status(200).send({ userName, _id })
   }
 )
@@ -85,16 +87,11 @@ app.post('/api/login',
 // Endpoint to logout
 app.get('/api/logout', (req, res) => {
   req.logout()
-  req.session.destroy()
-  // res.clearCookie('user_Id')
+  
+  // req.session.destroy()
+  // res.clearCookie('userId')
   res.status(200).send({ msg: 'user logged Out' })
 })
-
-app.get('/api/trip/count', (req, res) => {
-  res.status(200).send({ tripCount: 2 })
-})
-
-// req.locals.userId = req.session.passport._id
 
 const isLoggedIn = async (req, res, next) => {
   if (req.session.passport !== undefined) {

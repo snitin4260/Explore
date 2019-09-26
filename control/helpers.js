@@ -7,11 +7,13 @@ const moment = require('moment')
 const uuidv1 = require('uuid/v1')
 const postNewTrip = async (req, res) => {
   try {
+    const admin = req.session._id
+    // console.log(req.session.userId)
     const Trip = {
       tripName: req.body.tripName,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
-      // admin: req.cookies.userId,
+      admin: admin,
       member: []
     }
     const newTripData = await trips.create(Trip)
@@ -21,8 +23,13 @@ const postNewTrip = async (req, res) => {
   }
 }
 const countTrip = async (req, res) => {
+  console.log('im hiting')
   try {
-    res.status(200).json({ tripCount: 2 })
+    const count = 0
+    const _id = req.session._id
+    const totalTrips = await trips.find({ admin: _id })
+    const total = await totalTrips.filter(item => item._id === _id)
+    res.status(200).json({ tripCount: totalTrips.length })
   } catch (error) {
     res.status(404).json(error)
   }
@@ -30,6 +37,7 @@ const countTrip = async (req, res) => {
 const tripsById = async (req, res) => {
   try {
     const _id = req.params.id
+
     const tripData = await trips.findById(_id)
     res.status(200).json(tripData)
   } catch (error) {
@@ -38,8 +46,8 @@ const tripsById = async (req, res) => {
 }
 const allTrip = async (req, res) => {
   try {
-    // console.log(req.session.userId)
-    const allTripsData = await trips.find()
+    const _id = req.session._id
+    const allTripsData = await trips.find({ admin: _id })
     const allTripData = allTripsData.map(obj => {
       const trips = {}
       trips['tripName'] = obj.tripName
@@ -78,6 +86,7 @@ const particularItinearayData = async (req, res) => {
     // const trip = await trips.find(_id)
     // console.log(trips.admin)
     // console.log(currentUser === trip.admin)
+    console.log(req.session.user)
     const id = req.params.id
     const itinerary1 = await itinerarys.find({ tripId: id })
     if (itinerary1.length === 0) {
@@ -122,7 +131,7 @@ const itineraryLoop = (start, difference, id) => {
       day: i,
       _id: uuidv1(),
       date: start.add(1, 'days').format('DD-MM-YYYY'),
-      location: ' ',
+      location: '',
       activity: [],
       tripId: id
     }
@@ -149,12 +158,23 @@ const itineraryData = async (req, res) => {
     res.status(404).json(error)
   }
 }
+const getAllMembers = async (req, res) => {
+  console.log('im done')
+  try {
+    const _id = req.params.id
+    const tripData = await trips.findById(_id)
+    const members = await tripData.map(item => item.member)
+    res.status(200).json({ member: members })
+  } catch (error) {
+    res.status(404).json(error)
+  }
+}
 
 const getUser = async (req, res) => {
   // console.log('+' + req.cookies.userId)
   // console.log('im in')
-  if (req.cookies.userId !== undefined) {
-    const currentUser = await User.findById(req.cookies.userId)
+  if (req.session._id !== undefined) {
+    const currentUser = await User.findById(req.session._id)
     if (currentUser.length !== 0) {
       return res.status(200).json({ userName: currentUser.name })
     }
@@ -165,12 +185,12 @@ const getUser = async (req, res) => {
 // Todo logic
 const getAllTodos = async (req, res) => {
   try {
+    const user = req.session._id
     const tripId = req.params.id
-    // const userId = req.cookies.userId
-    const todo = await todos.find()
-    let column = await order.find()
-    if (column.length === 0) { column = await createOrder() }
-    const columnOrders = await column.map(item => {
+    const todo = await todos.find({ trip: tripId, user: req.session._id })
+    let column = await order.find({ trip: tripId, user: req.session._id })
+    if (column.length === 0) { column = await createOrder(tripId, user) }
+    const columnOrders = column.map(item => {
       const order = {}
       order['todo'] = item.todo
       order['inprogress'] = item.inprogress
@@ -199,21 +219,17 @@ const createTodo = async (req, res) => {
     const Todo = {
       text: req.body.text,
       id: uuidv1(),
-      user: tripId
+      trip: tripId,
+      user: req.session._id
     }
     const newTodo = await todos.create(Todo)
+    console.log(newTodo)
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
-
-    const column = await order.find()
-    // const column = await order.find()
+    const column = await order.find({ trip: req.params.id, user: req.session._id })
+    // console.log(column)
     const newTask = column[0].todo.taskIds
     newTask.push(newTodo.id)
     const result = await order.findOneAndUpdate({ todo: { taskIds: newTask } })
-    // const result = await order.findOneAndUpdate({ _id: userId }, { todo: { taskIds: newTask } })
-
-    // console.log('+' + result)
-    // console.log(column[0].todo.taskIds)
-    // order.update({ _id: userId }, { todo: { taskIds: newTask } })
     res.status(201).send({ ...todoData })
   } catch (error) {
     console.log(error)
@@ -221,7 +237,8 @@ const createTodo = async (req, res) => {
   }
 }
 
-async function createOrder () {
+async function createOrder (tripId, user) {
+  console.log('888' + tripId)
   const columnsOrder = {
     todo: {
       taskIds: []
@@ -232,8 +249,9 @@ async function createOrder () {
     done: {
       taskIds: []
     },
-    columnOrder: ['todo', 'inprogress', 'done']
-    // user: tripId
+    columnOrder: ['todo', 'inprogress', 'done'],
+    user: user,
+    trip: tripId
   }
   const data = await order.create(columnsOrder)
   return data
@@ -247,7 +265,7 @@ const columnOrderData = async (req, res) => {
     const toColumn = req.body.destinationColumnId
     const fromIndex = req.body.sourceIndex
     const toIndex = req.body.destinationIndex
-    const todoOrder = await order.find()
+    const todoOrder = await order.find({ trip: tripId, user: req.session._id })
     const fromArray = todoOrder[0][`${fromColumn}`].taskIds
     const fromId = fromArray.splice(fromIndex, 1)
     const result = await order.findOneAndUpdate({ [`${fromColumn}`]: { taskIds: fromArray } })
@@ -256,6 +274,7 @@ const columnOrderData = async (req, res) => {
     const newOrderData = await order.findOneAndUpdate({ [`${toColumn}`]: { taskIds: toId } })
     res.status(200).end()
   } catch (error) {
+    console.log(error)
     res.status(404).json(error)
   }
 }
@@ -287,5 +306,18 @@ const deleteTask = async (req, res) => {
     res.status(404).json(error)
   }
 }
-
-module.exports = { postNewTrip, allTrip, tripsById, updateTrip, deleteTrip, particularItinearayData, createTodo, updateTodoTask, deleteTask, columnOrderData, countTrip, getUser, itineraryData, getAllTodos }
+module.exports = { postNewTrip,
+  allTrip,
+  tripsById,
+  updateTrip,
+  deleteTrip,
+  particularItinearayData,
+  createTodo,
+  updateTodoTask,
+  deleteTask,
+  columnOrderData,
+  countTrip,
+  getUser,
+  itineraryData,
+  getAllMembers,
+  getAllTodos }
