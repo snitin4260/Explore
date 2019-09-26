@@ -2,9 +2,11 @@ const { trips } = require('../models/config')
 const todos = require('../models/todoSchema')
 const order = require('../models/orderSchema')
 const itinerarys = require('../models/itineararySchema')
+const invite = require('../models/inviteSchema')
 const User = require('../models/user')
 const moment = require('moment')
 const uuidv1 = require('uuid/v1')
+const invitePeoples = require('./mail')
 const postNewTrip = async (req, res) => {
   try {
     const admin = req.session._id
@@ -14,8 +16,9 @@ const postNewTrip = async (req, res) => {
       startDate: req.body.startDate,
       endDate: req.body.endDate,
       admin: admin,
-      member: []
+      members: []
     }
+    await Trip['members'].push(admin)
     const newTripData = await trips.create(Trip)
     res.status(201).json(`data added successfully${newTripData}`)
   } catch (error) {
@@ -163,9 +166,22 @@ const getAllMembers = async (req, res) => {
   try {
     const _id = req.params.id
     const tripData = await trips.findById(_id)
-    const members = await tripData.map(item => item.member)
-    res.status(200).json({ member: members })
+    const memberList = tripData['members']
+    const list = []
+    for (const id of memberList) {
+      const user = await User.findById(id)
+      list.push(user)
+    }
+    const members = await list.map(obj => {
+      const memList = {}
+      memList['_id'] = obj._id
+      memList['name'] = obj.name
+      memList['email'] = obj.email
+      return memList
+    })
+    res.status(200).json({ data: members })
   } catch (error) {
+    console.log(error)
     res.status(404).json(error)
   }
 }
@@ -190,7 +206,7 @@ const getAllTodos = async (req, res) => {
     const todo = await todos.find({ trip: tripId, user: req.session._id })
     let column = await order.find({ trip: tripId, user: req.session._id })
     if (column.length === 0) { column = await createOrder(tripId, user) }
-    const columnOrders = column.map(item => {
+    const columnOrders = await column.map(item => {
       const order = {}
       order['todo'] = item.todo
       order['inprogress'] = item.inprogress
@@ -223,11 +239,10 @@ const createTodo = async (req, res) => {
       user: req.session._id
     }
     const newTodo = await todos.create(Todo)
-    console.log(newTodo)
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
     const column = await order.find({ trip: req.params.id, user: req.session._id })
     // console.log(column)
-    const newTask = column[0].todo.taskIds
+    const newTask = await column[0].todo.taskIds
     newTask.push(newTodo.id)
     const result = await order.findOneAndUpdate({ todo: { taskIds: newTask } })
     res.status(201).send({ ...todoData })
@@ -306,6 +321,54 @@ const deleteTask = async (req, res) => {
     res.status(404).json(error)
   }
 }
+
+const invitePeople = async (req, res) => {
+  const trip = req.params.id
+  const userEmail = req.body.email[0].text
+  try {
+    const secureInvite = { token: uuidv1(), email: userEmail }
+    const inv = await invite.create(secureInvite)
+    invitePeoples(trip, userEmail, inv.token)
+    res.status(200).send({ msg: 'Email Sent Succesfully' })
+  } catch (error) {
+    res.status(400).send({ msg: 'Something Went Wrog' })
+  }
+}
+
+const joinTrip = async (req, res) => {
+  const trip = req.params.id
+  const email = req.body.email
+  const tripData = await trips.findOne({ _id: trip })
+  const admin = await User.findOne({ _id: tripData.admin })
+  const userAlreadyExist = await User.findOne({ email: email })
+  const existInTrip = tripData['members'].indexOf(userAlreadyExist._id)
+  if (userAlreadyExist && existInTrip === -1) {
+    return res.status(200).send({ hasAccount: true, userName: admin.name })
+  } else {
+    res.status(200).send({ hasAccount: false, userName: admin.name })
+  }
+}
+
+const joinAdd = async (req, res) => {
+  try {
+    const trip = req.params.id
+    const email = req.body.email
+    const key = req.body.key
+    const tripData = await trips.findOne({ _id: trip })
+    const tokenData = await invite.find({ email: email })
+    if (tokenData.email === email && tokenData.key === key) {
+      const user = await User.findOne({ email: email })
+      const newMember = tripData['members']
+      newMember.push(user._id)
+      const result = await trips.findOneAndUpdate({ _id: trip }, { members: newMember })
+      res.status(200).send({ msg: 'User added To the trip' })
+    }
+    return res.status(403).send({ msg: 'Unknown User' })
+  } catch (error) {
+    res.status(400).send({ msg: 'something went wrong' })
+  }
+}
+
 module.exports = { postNewTrip,
   allTrip,
   tripsById,
@@ -320,4 +383,7 @@ module.exports = { postNewTrip,
   getUser,
   itineraryData,
   getAllMembers,
+  invitePeople,
+  joinTrip,
+  joinAdd,
   getAllTodos }

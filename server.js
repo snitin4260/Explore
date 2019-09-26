@@ -86,12 +86,20 @@ app.post('/api/login',
 
 // Endpoint to logout
 app.get('/api/logout', (req, res) => {
+  req.session.destroy()
   req.logout()
-  
-  // req.session.destroy()
   // res.clearCookie('userId')
   res.status(200).send({ msg: 'user logged Out' })
 })
+
+// app.get('/api/member', async (req, res) => {
+//   const _id = req.params.id
+//   const tripData = await trips.find({ tripId: _id })
+//   const members = await tripData.map(item => item.member)
+//   console.log(tripData)
+//   res.status(200).json(members)
+// })
+
 
 const isLoggedIn = async (req, res, next) => {
   if (req.session.passport !== undefined) {
