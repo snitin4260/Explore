@@ -1,24 +1,14 @@
-LOgin routes
-https://nameless-lowlands-91053.herokuapp.com/login
+# Explore
 
-signup Routes
-https://nameless-lowlands-91053.herokuapp.com/signup
+A trip planner app built using React, Redux, express and MongoDB
 
+To start the react development server , run the following command on terminal
 
-To get all the trips
-https://nameless-lowlands-91053.herokuapp.com/trips/all
+```
+npm run start
+```
+To run express server ,run the following command on terminal
 
-to post new trip
-
-https://nameless-lowlands-91053.herokuapp.com/trips/new
-
-to update trip name
-
-https://nameless-lowlands-91053.herokuapp.com/trips/updatetrip
-
-to delete trip
-
-https://nameless-lowlands-91053.herokuapp.com/trips/delete/:id
-
-To get trips by id
-https://nameless-lowlands-91053.herokuapp.com/trips/:id
+```
+npm run server
+```
