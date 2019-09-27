@@ -187,8 +187,6 @@ const getAllMembers = async (req, res) => {
 }
 
 const getUser = async (req, res) => {
-  // console.log('+' + req.cookies.userId)
-  // console.log('im in')
   if (req.session._id !== undefined) {
     const currentUser = await User.findById(req.session._id)
     if (currentUser.length !== 0) {
@@ -241,10 +239,12 @@ const createTodo = async (req, res) => {
     const newTodo = await todos.create(Todo)
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
     const column = await order.find({ trip: req.params.id, user: req.session._id })
-    // console.log(column)
     const newTask = await column[0].todo.taskIds
-    newTask.push(newTodo.id)
-    const result = await order.findOneAndUpdate({ todo: { taskIds: newTask } })
+   const newList = await newTask.push(newTodo.id)
+    // const result = await order.findOneAndUpdate({ todo: { taskIds: newTask } })
+    const result = await order.findOneAndUpdate({ trip: req.params.id, user: req.session._id },
+      { todo: { taskIds: newTask } })
+    // console.log(result[0].todo.taskIds)
     res.status(201).send({ ...todoData })
   } catch (error) {
     console.log(error)
@@ -253,7 +253,6 @@ const createTodo = async (req, res) => {
 }
 
 async function createOrder (tripId, user) {
-  console.log('888' + tripId)
   const columnsOrder = {
     todo: {
       taskIds: []
@@ -328,7 +327,7 @@ const invitePeople = async (req, res) => {
   try {
     const secureInvite = { token: uuidv1(), email: userEmail }
     const inv = await invite.create(secureInvite)
-    invitePeoples(trip, userEmail, inv.token)
+    await invitePeoples(trip, userEmail, inv.token)
     res.status(200).send({ msg: 'Email Sent Succesfully' })
   } catch (error) {
     res.status(400).send({ msg: 'Something Went Wrog' })
@@ -338,14 +337,18 @@ const invitePeople = async (req, res) => {
 const joinTrip = async (req, res) => {
   const trip = req.params.id
   const email = req.body.email
-  const tripData = await trips.findOne({ _id: trip })
-  const admin = await User.findOne({ _id: tripData.admin })
-  const userAlreadyExist = await User.findOne({ email: email })
-  const existInTrip = tripData['members'].indexOf(userAlreadyExist._id)
-  if (userAlreadyExist && existInTrip === -1) {
-    return res.status(200).send({ hasAccount: true, userName: admin.name })
-  } else {
-    res.status(200).send({ hasAccount: false, userName: admin.name })
+  try {
+    const tripData = await trips.findOne({ _id: trip })
+    const admin = await User.findOne({ _id: tripData.admin })
+    const userAlreadyExist = await User.findOne({ email: email })
+    const existInTrip = tripData['members'].indexOf(userAlreadyExist._id)
+    if (userAlreadyExist && existInTrip === -1) {
+      return res.status(200).send({ hasAccount: true, userName: admin.name })
+    } else {
+      res.status(200).send({ hasAccount: false, userName: admin.name })
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -356,15 +359,18 @@ const joinAdd = async (req, res) => {
     const key = req.body.key
     const tripData = await trips.findOne({ _id: trip })
     const tokenData = await invite.find({ email: email })
-    if (tokenData.email === email && tokenData.key === key) {
+    console.log(tokenData)
+    if (tokenData.token === key) {
       const user = await User.findOne({ email: email })
       const newMember = tripData['members']
       newMember.push(user._id)
       const result = await trips.findOneAndUpdate({ _id: trip }, { members: newMember })
+      console.log('+++' + result)
       res.status(200).send({ msg: 'User added To the trip' })
     }
     return res.status(403).send({ msg: 'Unknown User' })
   } catch (error) {
+    console.log(error)
     res.status(400).send({ msg: 'something went wrong' })
   }
 }
