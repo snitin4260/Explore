@@ -240,7 +240,7 @@ const createTodo = async (req, res) => {
     const todoData = { _id: newTodo._id, createdAt: newTodo.createdAt }
     const column = await order.find({ trip: req.params.id, user: req.session._id })
     const newTask = await column[0].todo.taskIds
-   const newList = await newTask.push(newTodo.id)
+    const newList = await newTask.push(newTodo.id)
     // const result = await order.findOneAndUpdate({ todo: { taskIds: newTask } })
     const result = await order.findOneAndUpdate({ trip: req.params.id, user: req.session._id },
       { todo: { taskIds: newTask } })
@@ -325,7 +325,7 @@ const invitePeople = async (req, res) => {
   const trip = req.params.id
   const userEmail = req.body.email[0].text
   try {
-    const secureInvite = { token: uuidv1(), email: userEmail }
+    const secureInvite = { tripId: trip, token: uuidv1(), email: userEmail }
     const inv = await invite.create(secureInvite)
     await invitePeoples(trip, userEmail, inv.token)
     res.status(200).send({ msg: 'Email Sent Succesfully' })
@@ -360,7 +360,8 @@ const joinAdd = async (req, res) => {
     const tripData = await trips.findOne({ _id: trip })
     const tokenData = await invite.find({ email: email })
     console.log(tokenData)
-    if (tokenData.token === key) {
+    const userVerfied = tokenData.filter(item => item.token === key)
+    if (userVerfied.length !== 0) {
       const user = await User.findOne({ email: email })
       const newMember = tripData['members']
       newMember.push(user._id)
