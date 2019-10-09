@@ -1,66 +1,101 @@
-const { trips } = require('../models/config')
+// const { trips } = require('../models/config')
 const todos = require('../models/todoSchema')
 const order = require('../models/orderSchema')
 const itinerarys = require('../models/itineararySchema')
 const invite = require('../models/inviteSchema')
 const User = require('../models/user')
 const moment = require('moment')
+const client = require('../models/postgres')
 const uuidv1 = require('uuid/v1')
 const invitePeoples = require('./mail')
+// const postNewTrip = async (req, res) => {
+//   try {
+//     const admin = req.session._id
+//     const Trip = {
+//       tripName: req.body.tripName,
+//       startDate: req.body.startDate,
+//       endDate: req.body.endDate,
+//       admin: admin,
+//       members: []
+//     }
+//     await Trip['members'].push(admin)
+//     const newTripData = await trips.create(Trip)
+//     res.status(201).json(`data added successfully${newTripData}`)
+//   } catch (error) {
+//     res.status(400).json(Object.create(error))
+//   }
+// }
+
 const postNewTrip = async (req, res) => {
   try {
+    // const _id = uuidv1()
     const admin = req.session._id
-    // console.log(req.session.userId)
-    const Trip = {
-      tripName: req.body.tripName,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      admin: admin,
-      members: []
-    }
-    await Trip['members'].push(admin)
-    const newTripData = await trips.create(Trip)
-    res.status(201).json(`data added successfully${newTripData}`)
-  } catch (error) {
-    res.status(400).json(Object.create(error))
+    const { tripName, startDate, endDate } = req.body
+    const result = await client.query('INSERT INTO tripsTable (tripName, startDate, endDate, admin, members) VALUES ($1,$2,$3,$4,ARRAY[$5])',
+      [tripName, startDate, endDate, admin, admin])
+    res.status(201).json(result)
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({ msg: 'Problem Saving in Data' })
   }
 }
 const countTrip = async (req, res) => {
-  console.log('im hiting')
   try {
-    const count = 0
-    const _id = req.session._id
-    const totalTrips = await trips.find({ admin: _id })
-    const total = await totalTrips.filter(item => item._id === _id)
-    res.status(200).json({ tripCount: totalTrips.length })
-  } catch (error) {
-    res.status(404).json(error)
+    const tripId = req.params.id
+    const count = await client.query(' SELECT members FROM trip WHERE _id = $1 ) VALUES ($1)', [tripId])
+    console.log('++' + count)
+    res.status(200).json({ tripCount: count.rows[0].length })
+  } catch (err) {
+    res.status(404).json({ msg: 'No data found' })
   }
 }
+
+// const countTrip = async (req, res) => {
+//   console.log('im hiting')
+//   try {
+//     const count = 0
+//     const _id = req.session._id
+//     const totalTrips = await trips.find({ admin: _id })
+//     const total = await totalTrips.filter(item => item._id === _id)
+//     res.status(200).json({ tripCount: totalTrips.length })
+//   } catch (error) {
+//     res.status(404).json(error)
+//   }
+// }
 const tripsById = async (req, res) => {
   try {
     const _id = req.params.id
-
     const tripData = await trips.findById(_id)
     res.status(200).json(tripData)
   } catch (error) {
     res.status(404).json(error)
   }
 }
+// const allTrip = async (req, res) => {
+//   try {
+//     const _id = req.session._id
+//     const allTripsData = await trips.find({ admin: _id })
+//     const allTripData = allTripsData.map(obj => {
+//       const trips = {}
+//       trips['tripName'] = obj.tripName
+//       trips['_id'] = obj._id
+//       trips['createdAt'] = obj.createdAt
+//       return trips
+//     })
+//     res.status(200).json({ allTripData })
+//   } catch (error) {
+//     res.status(404).json(error)
+//   }
+// }
+
 const allTrip = async (req, res) => {
   try {
-    const _id = req.session._id
-    const allTripsData = await trips.find({ admin: _id })
-    const allTripData = allTripsData.map(obj => {
-      const trips = {}
-      trips['tripName'] = obj.tripName
-      trips['_id'] = obj._id
-      trips['createdAt'] = obj.createdAt
-      return trips
-    })
-    res.status(200).json({ allTripData })
-  } catch (error) {
-    res.status(404).json(error)
+    const tripId = req.params.id
+    const userId = req.session._id
+    const allTripData = await client.query('SELECT members FROM tripsTable WHERE _id ==$1) VALUES ($1)', [tripId])
+    console.log(allTripData)
+  } catch (err) {
+    console.log(err)
   }
 }
 
@@ -376,7 +411,9 @@ const joinAdd = async (req, res) => {
   }
 }
 
-module.exports = { postNewTrip,
+module.exports = {
+  postNewTrip,
+  countTrip,
   allTrip,
   tripsById,
   updateTrip,
@@ -386,11 +423,11 @@ module.exports = { postNewTrip,
   updateTodoTask,
   deleteTask,
   columnOrderData,
-  countTrip,
   getUser,
   itineraryData,
   getAllMembers,
   invitePeople,
   joinTrip,
   joinAdd,
-  getAllTodos }
+  getAllTodos
+}

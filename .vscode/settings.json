@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "connectionTimeout": 90000,
+            "database": "trips",
+            "dialect": "PostgreSQL",
+            "name": "postgres",
+            "password": "akshay4362",
+            "port": 5432,
+            "server": "localhost",
+            "username": "postgres"
+        }
+    ]
+}
