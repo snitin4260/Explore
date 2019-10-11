@@ -50,152 +50,113 @@ const countTrip = async (req, res) => {
   }
 }
 
-// const countTrip = async (req, res) => {
-//   console.log('im hiting')
-//   try {
-//     const count = 0
-//     const _id = req.session._id
-//     const totalTrips = await trips.find({ admin: _id })
-//     const total = await totalTrips.filter(item => item._id === _id)
-//     res.status(200).json({ tripCount: totalTrips.length })
-//   } catch (error) {
-//     res.status(404).json(error)
-//   }
-// }
-const tripsById = async (req, res) => {
-  try {
-    const _id = req.params.id
-    const tripData = await trips.findById(_id)
-    res.status(200).json(tripData)
-  } catch (error) {
-    res.status(404).json(error)
-  }
-}
-// const allTrip = async (req, res) => {
-//   try {
-//     const _id = req.session._id
-//     const allTripsData = await trips.find({ admin: _id })
-//     const allTripData = allTripsData.map(obj => {
-//       const trips = {}
-//       trips['tripName'] = obj.tripName
-//       trips['_id'] = obj._id
-//       trips['createdAt'] = obj.createdAt
-//       return trips
-//     })
-//     res.status(200).json({ allTripData })
-//   } catch (error) {
-//     res.status(404).json(error)
-//   }
-// }
-
 const allTrip = async (req, res) => {
   try {
-    const tripId = req.params.id
     const userId = req.session._id
-    const allTripData = await client.query('SELECT members FROM tripsTable WHERE _id ==$1) VALUES ($1)', [tripId])
-    console.log(allTripData)
+    const allTrips = await client.query('SELECT tripName,_id,createdAt FROM tripsTable  WHERE admin = $1', [userId])
+    const allTripData = allTrips.rows.map(obj => {
+      const trips = {}
+      trips['tripName'] = obj.tripname
+      trips['_id'] = obj._id
+      trips['createdAt'] = obj.createdat
+      return trips
+    })
+    res.status(200).json({ allTripData })
   } catch (err) {
     console.log(err)
+    res.status(404).json({ msg: 'No Trips found' })
   }
 }
 
-const updateTrip = async (req, res) => {
-  try {
-    const updatedTripData = await trips.findOneAndUpdate({ _id: req.body.id },
-      { tripName: req.body.tripName }, { new: true })
-    res.status(200).json(updatedTripData)
-  } catch (error) {
-    res.status(404).json(error)
-  }
-}
-const deleteTrip = async (req, res) => {
-  try {
-    const deletedTrip = await trips.findOneAndDelete({ _id: req.params.id })
-    res.status(200).json(`item deleted ${deletedTrip.tripName}`)
-  } catch (error) {
-    res.status(404).json(error)
-  }
-}
-
-const particularItinearayData = async (req, res) => {
-  try {
-    // const _id = req.params.id
-    // const currentUser = req.cookies.userId
-    // const trip = await trips.find(_id)
-    // console.log(trips.admin)
-    // console.log(currentUser === trip.admin)
-    console.log(req.session.user)
-    const id = req.params.id
-    const itinerary1 = await itinerarys.find({ tripId: id })
-    if (itinerary1.length === 0) {
-      const _id = req.params.id
-      const particularTrip = await trips.findById(_id)
-      const start = moment(particularTrip.startDate)
-      const end = moment(particularTrip.endDate)
-      const difference = start.diff(end, 'days')
-      const itidata = await itineraryLoop(start, Math.abs(difference), particularTrip._id)
-      const itineraryData = await itinerarys.create(itidata)
-      const itinerary = await itineraryData.map(item => {
-        const itinerary = {}
-        itinerary['day'] = item.day
-        itinerary['_id'] = item._id
-        itinerary['date'] = item.date
-        itinerary['location'] = item.location
-        itinerary['activity'] = item.activity
-        return itinerary
-      })
-      res.status(200).json({ itinerary, isAdmin: true })
-    } else {
-      const result = await itinerarys.find({ tripId: id })
-      const itinerary = await result.map(item => {
-        const itinerary = {}
-        itinerary['day'] = item.day
-        itinerary['_id'] = item._id
-        itinerary['date'] = item.date
-        itinerary['location'] = item.location
-        itinerary['activity'] = item.activity
-        return itinerary
-      })
-      res.status(200).json({ itinerary, isAdmin: true })
-    }
-  } catch (error) {
-    res.status(400).json(error)
-  }
-}
-const itineraryLoop = (start, difference, id) => {
-  const itineraryArray = []
-  for (let i = 1; i <= (difference + 1); i++) {
-    const Itinerary = {
-      day: i,
-      _id: uuidv1(),
-      date: start.add(1, 'days').format('DD-MM-YYYY'),
-      location: '',
-      activity: [],
-      tripId: id
-    }
-    itineraryArray.push(Itinerary)
-  }
-  return itineraryArray
-}
+// const itineraryData = async (req, res) => {
+//   try {
+//     const dayId = req.body._id
+//     const itinerarayLocation = req.body.location
+//     const itinerarayActivity = req.body.activity
+//     const id = req.params.id
+//     const itinerary = await itinerarys.find({ tripId: id })
+//     for (const x of itinerary) {
+//       if (x.id === dayId) {
+//         const result = await itinerarys.findOneAndUpdate({ _id: x.id }, { activity: itinerarayActivity, location: itinerarayLocation })
+//       }
+//     }
+//     res.status(200).json({ msg: 'data updated' })
+//   } catch (error) {
+//     console.log(error)
+//     res.status(404).json(error)
+//   }
+// }
 
 const itineraryData = async (req, res) => {
   try {
     const dayId = req.body._id
     const itinerarayLocation = req.body.location
     const itinerarayActivity = req.body.activity
-    const id = req.params.id
-    const itinerary = await itinerarys.find({ tripId: id })
-    for (const x of itinerary) {
-      if (x.id === dayId) {
-        const result = await itinerarys.findOneAndUpdate({ _id: x.id }, { activity: itinerarayActivity, location: itinerarayLocation })
-      }
-    }
+    const tripId = req.params.id
+    // const all = itinerarayActivity.map(item => {
+    //   const itinerary = client.query('INSERT INTO  activity (_id, task, dayId,tripId) WHERE tripId = $6 AND dayId = $7  VALUES ($1,$2,$3,$4) ON CONFLICT ON CONSTRAINT activity_task_key DO NOTHING',
+    //     [item.itinerarayActivity['id'], item.itinerarayActivity.task, item.dayId, item.tripId, item.dayId, item.tripId])
+    //   const locationUpdate = client.query('UPDATE itinerary SET location =$1 WHERE dayId = $2 ON CONFLICT ON CONSTRAINT activity_location_key DO NOTHING',
+    //     [item.itinerarayLocation, item.dayId])
+    // })
     res.status(200).json({ msg: 'data updated' })
-  } catch (error) {
-    console.log(error)
-    res.status(404).json(error)
+  } catch (err) {
+    console.log(err)
+    res.status(404).json(err)
   }
 }
+
+const particularItinearayData = async (req, res) => {
+  try {
+    console.log('im done')
+    const itineraryData = await client.query('SELECT * FROM itinerary WHERE tripId =$1', [req.params.id])
+    // console.log(itineraryData)
+    if (itineraryData.rows.length === 0) {
+      const particularTrip = await client.query('SELECT startdate, enddate, _id FROM tripsTable WHERE _id = $1', [req.params.id])
+      console.log(particularTrip['rows'][0].startdate)
+      const start = moment(particularTrip['rows'][0].startdate)
+      const end = moment(particularTrip['rows'][0].enddate)
+      const difference = end.diff(start, 'days')
+      const itineraryCreate = await itineraryLoop(start, difference, particularTrip['rows'][0]._id)
+      const allIti = await client.query('SELECT * FROM itinerary WHERE tripId =$1', [req.params.id])
+      let activity = await client.query('SELECT * FROM activity WHERE tripId =$1', [req.params.id])
+      activity = activity.rows.length === 0 ? [] : [...activity.rows]
+      const itinerary = await allIti['rows'].map(item => {
+        const itinerary = {}
+        itinerary['day'] = item.day
+        itinerary['_id'] = item._id
+        itinerary['date'] = item.date
+        itinerary['activity'] = activity
+        itinerary['location'] = item.location
+        return itinerary
+      })
+      res.status(200).json({ itinerary, isAdmin: true })
+    } else {
+      let activity = await client.query('SELECT * FROM activity WHERE tripId =$1', [req.params.id])
+      activity = activity.rows.length === 0 ? [] : [...activity.rows]
+      const itinerary = await itineraryData['rows'].map(item => {
+        const itinerary = {}
+        itinerary['day'] = item.day
+        itinerary['_id'] = item._id
+        itinerary['date'] = item.date
+        itinerary['location'] = item.location
+        itinerary['activity'] = activity
+        return itinerary
+      })
+      res.status(200).json({ itinerary, isAdmin: true })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({ msg: 'something went wrong' })
+  }
+}
+const itineraryLoop = (start, difference, id) => {
+  for (let i = 1; i <= (difference + 1); i++) {
+    const data = client.query('INSERT INTO itinerary (day, _id, date, location, tripid) VALUES ($1,$2,$3,$4,$5)', [i, uuidv1(),
+      start.add(1, 'days').format('DD-MM-YYYY'), '', id])
+  }
+}
+
 const getAllMembers = async (req, res) => {
   console.log('im done')
   try {
@@ -415,9 +376,6 @@ module.exports = {
   postNewTrip,
   countTrip,
   allTrip,
-  tripsById,
-  updateTrip,
-  deleteTrip,
   particularItinearayData,
   createTodo,
   updateTodoTask,

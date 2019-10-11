@@ -26,3 +26,5 @@ sendgrid.env
 .env
 
 socketserver.js
+postgres Session.sql
+test.js
